@@ -1302,3 +1302,78 @@ footer strong {
     font-size: 0.8rem;
   }
 }
+
+/* ================================================================
+   CLASES REUTILIZABLES — Reemplazan estilos inline (style="...")
+   ================================================================ */
+
+/* Oculto por defecto: se muestra/oculta con JS (display: none → flex/block) */
+.hidden {
+  display: none;
+}
+
+/* Contenedor flex con alineación al final (para botones dentro de grillas) */
+.flex-end {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Caja de declaración / texto legal (certificacion.html) */
+.declaracion-box {
+  background: var(--bg-light);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+
+.declaracion-box p {
+  font-size: 0.92rem;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.declaracion-box ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  font-size: 0.88rem;
+  color: var(--text-medium);
+}
+
+.declaracion-box li {
+  margin-bottom: 0.5rem;
+}
+
+/* Texto secundario pequeño (pies de formulario, leyendas) */
+.text-caption {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+/* Label destacado (totales, resúmenes) */
+.label-highlight {
+  font-size: 1rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Input destacado (para campos de total/resumen deshabilitados) */
+.input-highlight {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: #eff6ff;
+  border-color: var(--primary-light);
+}
+
+/* Avatar del administrador (rojo) */
+.avatar-admin {
+  background: var(--error);
+}
+
+/* Etiqueta de filtro (admin toolbar) */
+.filter-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-medium);
+}

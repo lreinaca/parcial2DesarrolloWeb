@@ -92,11 +92,11 @@ const grupoPais = document.getElementById("grupoPaisExtranjero");
 // Escuchar cada vez que cambia la selección de nacionalidad
 selectNacionalidad.addEventListener("change", function() {
   if (this.value === "extranjera") {
-    // Si eligió "Extranjera", mostrar el campo de país
-    grupoPais.style.display = "flex";
+    // Si eligió "Extranjera", mostrar el campo de país (quitar clase .hidden)
+    grupoPais.classList.remove("hidden");
   } else {
     // Si eligió "Colombiana" u otra, ocultar y limpiar la selección
-    grupoPais.style.display = "none";
+    grupoPais.classList.add("hidden");
     selectPais.value = "";
   }
 });

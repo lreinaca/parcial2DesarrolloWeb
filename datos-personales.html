@@ -135,7 +135,7 @@
         - inputmode="numeric" → Muestra teclado numérico en móviles
 
         CAMPO CONDICIONAL (País de Origen):
-        - #grupoPaisExtranjero tiene style="display: none" por defecto
+        - #grupoPaisExtranjero tiene la clase .hidden por defecto
         - Se muestra cuando el usuario elige "Extranjera" en nacionalidad
         - El JS en datos-personales.js se encarga de mostrarlo/ocultarlo
         - Las opciones del <select> de países se cargan dinámicamente con JS
@@ -222,7 +222,7 @@
           </div>
 
           <!-- Campo condicional: aparece solo cuando se elige "Extranjera" (se controla con JS) -->
-          <div class="form-group" id="grupoPaisExtranjero" style="display: none;">
+          <div class="form-group hidden" id="grupoPaisExtranjero">
             <label for="paisExtranjero">País de Origen <span class="required-mark">*</span></label>
             <!-- Las opciones se cargan dinámicamente desde un arreglo JS (ver script al final) -->
             <select id="paisExtranjero" name="paisExtranjero">

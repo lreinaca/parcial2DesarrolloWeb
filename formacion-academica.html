@@ -167,7 +167,7 @@
         - ¿Se graduó? (Sí/No)
         - Institución: <select> con universidades + opción "Otra"
           → Si elige "Otra", aparece un <input> de texto (#otraInstitucion)
-            que está oculto por defecto (style="display: none")
+            que está oculto por defecto (clase .hidden)
         - Título obtenido, fecha de terminación, tarjeta profesional
 
         TABLA DE RESULTADOS:
@@ -236,7 +236,7 @@
               <span class="error-msg">Seleccione la institución educativa</span>
               <!-- Si se selecciona "Otra", se muestra este campo de texto -->
               <input type="text" id="otraInstitucion" name="otraInstitucion"
-                     placeholder="Ingrese el nombre de la institución" maxlength="120" style="display: none;">  
+                     placeholder="Ingrese el nombre de la institución" maxlength="120" class="hidden">  
               <span class="error-msg">Ingrese la institución educativa</span>
             </div>
             <div class="form-group">
@@ -258,7 +258,7 @@
               <input type="text" id="tarjetaProfesional" name="tarjetaProfesional"
                      placeholder="Si aplica" maxlength="30">
             </div>
-            <div class="form-group" style="display: flex; align-items: flex-end;">
+            <div class="form-group flex-end">
               <button type="button" class="btn btn-accent btn-sm" id="btnAgregarEstudio">
                 ➕ Agregar Estudio
               </button>
