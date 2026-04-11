@@ -1,0 +1,144 @@
+<!--
+  ============================================================
+  INDEX.HTML — Página de Inicio de Sesión (Login)
+  ============================================================
+  PROPÓSITO:
+  Punto de entrada de la aplicación. El usuario elige su ROL
+  (Usuario o Administrador) e ingresa sus credenciales.
+  Según el rol, el formulario redirige a:
+    - Usuario  → datos-personales.html (paso 1 del wizard)
+    - Admin    → admin.html (panel de administración)
+
+  ESTRUCTURA:
+  ┌─ <header>         → Barra superior con el nombre de la app
+  ├─ <div.login-wrapper> → Centrado vertical/horizontal (flexbox)
+  │   └─ <div.login-card>  → Tarjeta blanca con el formulario
+  │       ├─ Logo + título
+  │       ├─ Selector de Rol (radio buttons con tarjetas)
+  │       └─ Formulario (usuario + contraseña + botón submit)
+  └─ <footer>         → Pie de página con créditos
+
+  CLASES CSS CLAVE (ver css/styles.css):
+  - .login-wrapper  → Centra la tarjeta con flexbox (vertical + horizontal)
+  - .login-card     → Tarjeta blanca con sombra y bordes redondeados
+  - .role-selector  → Contenedor flex para las opciones de rol
+  - .role-option    → Cada tarjeta de rol (clickeable como radio button)
+  - .selected       → Resalta la tarjeta de rol actualmente seleccionada
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoja de Vida - Inicio de Sesión</title>
+  <!-- Hoja de estilos compartida por todas las páginas del proyecto -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER: Encabezado principal de la aplicación, visible en la página de inicio de sesión -->
+  <header>
+    <div class="header-inner">
+      <h1>Hoja de <span>Vida</span></h1>
+    </div>
+  </header>
+
+  <!--
+    LOGIN-WRAPPER: Contenedor que centra la tarjeta de login
+    en el centro exacto de la pantalla (usa flexbox con justify-content
+    y align-items en center). Ocupa todo el espacio disponible (flex: 1).
+  -->
+  <div class="login-wrapper">
+    <!--
+      LOGIN-CARD: Tarjeta principal del formulario de login.
+      Contiene el logo, selector de rol y campos del formulario.
+      max-width: 420px limita su ancho para que no se extienda demasiado.
+    -->
+    <div class="login-card">
+      <!-- Encabezado de la tarjeta: logo circular con iniciales + título -->
+      <div class="login-header">
+        <div class="login-logo">HV</div>
+        <h2>Hoja de Vida</h2>
+        <p>Sistema de gestión de hojas de vida</p>
+      </div>
+
+      <!--
+        SELECTOR DE ROL: Dos "tarjetas" tipo radio button.
+        Cada <label> envuelve un <input type="radio">, así que al hacer
+        clic en cualquier parte de la tarjeta se selecciona el radio.
+        - .role-option: Estilo base de cada tarjeta
+        - .selected: Clase que resalta la opción elegida (borde azul)
+        La clase .selected se debe alternar con JavaScript al cambiar
+        el radio (actualmente no hay JS conectado, pero la estructura
+        está lista para ello).
+      -->
+      <div class="role-selector">
+        <label class="role-option selected">
+          <a href="datos-personales.html">
+            <input type="radio" name="role" value="usuario" checked>
+            <div class="role-icon">👤</div>
+            <div class="role-name">Usuario</div>
+          </a>
+        </label>
+        
+        <label class="role-option">
+          <a href="admin.html">
+            <input type="radio" name="role" value="admin">
+            <div class="role-icon">🛡️</div>
+            <div class="role-name">Administrador</div>
+          </a>
+        </label>
+        
+      </div>
+
+      <!--
+        FORMULARIO DE LOGIN:
+        - action="datos-personales.html": al hacer submit, navega al paso 1
+          (en una app real, esto iría al servidor para validar credenciales)
+        - method="get": envía los datos como parámetros en la URL
+        - Campos: usuario y contraseña con validaciones HTML5
+          · minlength/maxlength: longitud mínima y máxima
+          · autocomplete: ayuda al navegador a sugerir datos guardados
+        - Los <span class="error-msg"> son mensajes de error ocultos por defecto,
+          se mostrarían con JS al validar
+      -->
+      <form id="loginForm" action="datos-personales.html" method="get">
+        <div class="form-group">
+          <label for="usuario">Usuario <span class="required-mark">*</span></label>
+          <input type="text" id="usuario" name="usuario" placeholder="Ingrese su usuario"
+                 minlength="3" maxlength="30" autocomplete="username">
+          <span class="error-msg" id="errorUsuario">El usuario es obligatorio</span>
+        </div>
+
+        <div class="form-group">
+          <label for="contrasena">Contraseña <span class="required-mark">*</span></label>
+          <input type="password" id="contrasena" name="contrasena" placeholder="Ingrese su contraseña"
+                 minlength="4" maxlength="50" autocomplete="current-password">
+          <span class="error-msg" id="errorContrasena">La contraseña es obligatoria</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+      </form>
+
+      <p class="text-center mt-2" style="font-size: 0.8rem; color: var(--text-light);">
+        Facultad de Ingeniería &mdash; Desarrollo Web
+      </p>
+    </div>
+  </div>
+
+  <!-- FOOTER: Pie de página con información de la facultad y año -->
+  <footer>
+    <p>Facultad de Ingeniería &mdash; <strong>Desarrollo Web</strong> &mdash; Parcial II &mdash; 2026</p>
+  </footer>
+
+  <!--
+    SCRIPT: Archivo JS para manejar la lógica del login.
+    Actualmente comentado porque aún no se ha creado.
+    Aquí iría la validación del formulario y el cambio de
+    action según el rol seleccionado (usuario → datos-personales.html,
+    admin → admin.html).
+  -->
+  <!-- <script src="js/login.js"></script> -->
+</body>
+</html>

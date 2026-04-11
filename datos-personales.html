@@ -1,0 +1,588 @@
+<!--
+  ============================================================
+  DATOS-PERSONALES.HTML — Paso 1 del Wizard: Datos Personales
+  ============================================================
+  PROPÓSITO:
+  Formulario para capturar la información personal del usuario:
+  identificación, libreta militar, nacimiento y contacto.
+
+  ESTRUCTURA GENERAL:
+  ┌─ <header>       → Barra superior con nombre de app + avatar del usuario
+  ├─ <nav>          → Stepper de 5 pasos (este es el paso 1 = .active)
+  ├─ <main>         → Contenido principal
+  │   ├─ .progress-bar     → Indicador visual de progreso (paso 1 resaltado)
+  │   ├─ <form>            → Formulario principal (NO usa submit real)
+  │   │   ├─ Sección: Identificación (nombres, apellidos, documento, sexo, nacionalidad)
+  │   │   ├─ Sección: Libreta Militar (condicional, se muestra si aplica)
+  │   │   ├─ Sección: Fecha y Lugar de Nacimiento
+  │   │   ├─ Sección: Datos de Contacto y Correspondencia
+  │   │   ├─ Panel de Previsualización (oculto, se muestra con JS)
+  │   │   └─ Botones de acción (Previsualizar, Volver, Siguiente)
+  └─ <footer>       → Pie de página
+
+  NAVEGACIÓN:
+  - ← Volver: regresa a index.html (login)
+  - Siguiente →: va a formacion-academica.html (paso 2)
+
+  JAVASCRIPT:
+  - js/datos-personales.js: Carga dinámicamente los <select> de país,
+    tipo de documento y sexo desde arreglos JS. También maneja la
+    visibilidad condicional del campo "País de Origen" cuando se
+    selecciona nacionalidad "Extranjera".
+
+  CLASES CSS CLAVE:
+  - .form-grid.cols-4  → Grilla de 4 columnas (para nombres/apellidos)
+  - .form-grid.cols-3  → Grilla de 3 columnas (para documento/sexo/etc.)
+  - .required-mark     → Asterisco rojo (*) que indica campo obligatorio
+  - .error-msg         → Mensaje de error oculto (se muestra con JS)
+  - .radio-group       → Grupo de radio buttons en línea
+  - .preview-panel     → Panel de previsualización (oculto por defecto)
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoja de Vida - Datos Personales</title>
+  <!-- Hoja de estilos compartida por todas las páginas -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!--
+    HEADER: Barra superior fija (sticky) con gradiente azul.
+    Muestra el nombre de la app a la izquierda y el usuario con
+    avatar a la derecha. El avatar muestra la inicial "U" (Usuario).
+  -->
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <a href="index.html"><h1>Hoja de <span>Vida</span></h1></a>
+      <div class="header-user">
+        <span>Usuario</span>
+        <div class="avatar">U</div>
+      </div>
+    </div>
+  </header>
+
+  <!--
+    NAV (STEPPER): Barra de navegación por pasos.
+    - .active   → Paso actual (Datos Personales, paso 1)
+    - .disabled → Pasos que aún no se pueden acceder (2-5)
+    Cada paso tiene un número (.step-num) y un texto descriptivo.
+    En pantallas pequeñas (≤480px) el texto se oculta y solo queda el número.
+  -->
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="datos-personales.html" class="active">
+        <span class="step-num">1</span>
+        <span>Datos Personales</span>
+      </a>
+      <a href="formacion-academica.html" class="disabled">
+        <span class="step-num">2</span>
+        <span>Formación Académica</span>
+      </a>
+      <a href="experiencia-laboral.html" class="disabled">
+        <span class="step-num">3</span>
+        <span>Experiencia Laboral</span>
+      </a>
+      <a href="tiempo-experiencia.html" class="disabled">
+        <span class="step-num">4</span>
+        <span>Tiempo Experiencia</span>
+      </a>
+      <a href="certificacion.html" class="disabled">
+        <span class="step-num">5</span>
+        <span>Certificación</span>
+      </a>
+      <a href="index.html">
+        <span class="step-num">🚪</span>
+        <span>Cerrar Sesión</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN: Contenido principal de la página -->
+  <main>
+    <!--
+      BARRA DE PROGRESO: 5 líneas de color que indican el avance.
+      - .current   → Paso actual (naranja/acento)
+      - .completed → Pasos ya completados (verde)
+      - Sin clase  → Pasos pendientes (gris)
+    -->
+    <div class="progress-bar">
+      <div class="progress-step current"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+    </div>
+
+    <!-- Formulario principal (no hace submit real, la navegación es con <a>) -->
+    <form id="formDatosPersonales">
+
+      <!--
+        SECCIÓN 1: DATOS DE IDENTIFICACIÓN
+        ====================================
+        Grilla de 4 columnas (cols-4) para los nombres y apellidos.
+        Luego grilla de 3 columnas (cols-3) para documento, sexo, nacionalidad.
+
+        VALIDACIONES HTML5:
+        - pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" → Solo letras (español), tildes y espacios
+        - maxlength → Límite de caracteres
+        - pattern="[0-9]+" → Solo números (para documento)
+        - inputmode="numeric" → Muestra teclado numérico en móviles
+
+        CAMPO CONDICIONAL (País de Origen):
+        - #grupoPaisExtranjero tiene style="display: none" por defecto
+        - Se muestra cuando el usuario elige "Extranjera" en nacionalidad
+        - El JS en datos-personales.js se encarga de mostrarlo/ocultarlo
+        - Las opciones del <select> de países se cargan dinámicamente con JS
+      -->
+      <!-- Sección: Identificación -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">📋</span> Datos de Identificación
+        </h2>
+        <!--
+          EXPLICACIÓN DEL ATRIBUTO pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+          ================================================================
+          - pattern: atributo HTML5 que define una expresión regular para validar el campo.
+          - [A-Za-z]: permite letras del alfabeto inglés, mayúsculas (A-Z) y minúsculas (a-z).
+          - ÁÉÍÓÚáéíóúÑñ: permite vocales con tilde y la letra ñ (propias del español).
+          - \s: permite espacios en blanco (para nombres compuestos como "De La Cruz").
+          - +: indica que debe haber al menos 1 carácter válido (uno o más).
+          - title="Solo letras": texto que aparece como tooltip cuando el usuario pasa el mouse,
+            y también se muestra en el mensaje de error nativo del navegador si el valor no coincide.
+          En resumen: solo acepta letras (con tildes), ñ y espacios. NO permite números ni símbolos.
+        -->
+        <div class="form-grid cols-4">
+          <div class="form-group">
+            <label for="primerApellido">Primer Apellido <span class="required-mark">*</span></label>
+            <input type="text" id="primerApellido" name="primerApellido"
+                   placeholder="Ej: García" maxlength="60"
+                   pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras">
+            <span class="error-msg">Este campo es obligatorio</span>
+          </div>
+          <div class="form-group">
+            <label for="segundoApellido">Segundo Apellido (o de Casada) </label>
+            <input type="text" id="segundoApellido" name="segundoApellido"
+                   placeholder="Ej: López" maxlength="60"
+                   pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras">
+          </div>
+          <div class="form-group">
+            <label for="primerNombre">Primer Nombre <span class="required-mark">*</span></label>
+            <input type="text" id="primerNombre" name="primerNombre"
+                   placeholder="Ej: Juan" maxlength="40"
+                   pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras">
+            <span class="error-msg">Este campo es obligatorio</span>
+          </div>
+          <div class="form-group">
+            <label for="segundoNombre">Segundo Nombre</label>
+            <input type="text" id="segundoNombre" name="segundoNombre"
+                   placeholder="Ej: Carlos" maxlength="40"
+                   pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras">
+          </div>
+        </div>
+
+        <div class="form-grid cols-3 mt-2">
+          <div class="form-group">
+            <label for="tipoDocumento">Tipo de Documento <span class="required-mark">*</span></label>
+            <select id="tipoDocumento" name="tipoDocumento">
+              <option value="">-- Seleccione Tipo de Documento --</option>
+            </select>
+            <span class="error-msg">Seleccione un tipo de documento</span>
+          </div>
+          <div class="form-group">
+            <label for="numeroDocumento">Número de Documento <span class="required-mark">*</span></label>
+            <input type="text" id="numeroDocumento" name="numeroDocumento"
+                   placeholder="Ej: 1234567890" maxlength="15"
+                   pattern="[0-9]+" inputmode="numeric" title="Solo números">
+            <span class="error-msg">Ingrese un número de documento válido</span>
+          </div>
+          <div class="form-group">
+            <label for="sexo">Sexo <span class="required-mark">*</span></label>
+            <select id="sexo" name="sexo">
+              <option value="">-- Seleccione --</option>
+            </select>
+            <span class="error-msg">Seleccione una opción</span>
+          </div>
+        </div>
+
+        <div class="form-grid cols-3 mt-2">
+          <div class="form-group">
+            <label for="nacionalidad">Nacionalidad <span class="required-mark">*</span></label>
+            <select id="nacionalidad" name="nacionalidad">
+              <option value="">-- Seleccione --</option>
+              <option value="colombiana">Colombiana</option>
+              <option value="extranjera">Extranjera</option>
+            </select>
+            <span class="error-msg">Seleccione su nacionalidad</span>
+          </div>
+
+          <!-- Campo condicional: aparece solo cuando se elige "Extranjera" (se controla con JS) -->
+          <div class="form-group" id="grupoPaisExtranjero" style="display: none;">
+            <label for="paisExtranjero">País de Origen <span class="required-mark">*</span></label>
+            <!-- Las opciones se cargan dinámicamente desde un arreglo JS (ver script al final) -->
+            <select id="paisExtranjero" name="paisExtranjero">
+              <option value="">-- Seleccione País --</option>
+            </select>
+            <span class="error-msg">Seleccione su país de origen</span>
+          </div>
+          
+          <div class="form-group">
+            <label>Libreta Militar</label>
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="tieneLibreta" value="si"> Sí
+              </label>
+              <label>
+                <input type="radio" name="tieneLibreta" value="no"> No
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!--
+        SECCIÓN 2: LIBRETA MILITAR (CONDICIONAL)
+        ==========================================
+        Esta sección siempre es visible en el HTML, pero en una versión
+        con JS completo se podría ocultar/mostrar según el radio button
+        "tieneLibreta" (Sí/No) de la sección anterior.
+        Campos: número de libreta, distrito militar (20 distritos de Colombia),
+        clase de libreta (Primera/Segunda).
+      -->
+      <!-- Sección: Libreta Militar (condicional) -->
+      <section id="seccionLibretaMilitar">
+        <h2 class="section-title">
+          <span class="icon">🎖️</span> Información de Libreta Militar
+        </h2>
+        <div class="form-grid cols-3">
+          <div class="form-group">
+            <label for="numeroLibreta">Número de Libreta</label>
+            <input type="text" id="numeroLibreta" name="numeroLibreta"
+                   placeholder="Ej: 123456" maxlength="20"
+                   pattern="[0-9]+" inputmode="numeric" title="Solo números">
+          </div>
+          <div class="form-group">
+            <label for="distritoMilitar">Distrito Militar</label>
+            <select id="distritoMilitar" name="distritoMilitar">
+              <option value="">-- Seleccione --</option>
+              <option value="1">Distrito 1 - Bogotá</option>
+              <option value="2">Distrito 2 - Tunja</option>
+              <option value="3">Distrito 3 - Sogamoso</option>
+              <option value="4">Distrito 4 - Bucaramanga</option>
+              <option value="5">Distrito 5 - Cúcuta</option>
+              <option value="6">Distrito 6 - Medellín</option>
+              <option value="7">Distrito 7 - Manizales</option>
+              <option value="8">Distrito 8 - Pereira</option>
+              <option value="9">Distrito 9 - Neiva</option>
+              <option value="10">Distrito 10 - Ibagué</option>
+              <option value="11">Distrito 11 - Cali</option>
+              <option value="12">Distrito 12 - Popayán</option>
+              <option value="13">Distrito 13 - Pasto</option>
+              <option value="14">Distrito 14 - Barranquilla</option>
+              <option value="15">Distrito 15 - Cartagena</option>
+              <option value="16">Distrito 16 - Santa Marta</option>
+              <option value="17">Distrito 17 - Montería</option>
+              <option value="18">Distrito 18 - Villavicencio</option>
+              <option value="19">Distrito 19 - Florencia</option>
+              <option value="20">Distrito 20 - Quibdó</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="claseLibreta">Clase de Libreta</label>
+            <select id="claseLibreta" name="claseLibreta">
+              <option value="">-- Seleccione --</option>
+              <option value="primera">Primera</option>
+              <option value="segunda">Segunda</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!--
+        SECCIÓN 3: FECHA Y LUGAR DE NACIMIENTO
+        ========================================
+        - Fecha de nacimiento con input type="date" (min 1940, max 2010)
+        - País con opciones fijas (Colombia + principales países)
+        - Departamento: Los 33 departamentos + Bogotá D.C. de Colombia
+        - Municipio: Input de texto (en una versión con JS, se cargaría
+          dinámicamente según el departamento seleccionado)
+      -->
+      <!-- Sección: Lugar de Nacimiento -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">📍</span> Fecha y Lugar de Nacimiento
+        </h2>
+        <div class="form-grid cols-3">
+          <div class="form-group">
+            <label for="fechaNacimiento">Fecha de Nacimiento <span class="required-mark">*</span></label>
+            <input type="date" id="fechaNacimiento" name="fechaNacimiento"
+                   min="1940-01-01" max="2010-12-31">
+            <span class="error-msg">Seleccione su fecha de nacimiento</span>
+          </div>
+          <div class="form-group">
+            <label for="paisNacimiento">País <span class="required-mark">*</span></label>
+            <select id="paisNacimiento" name="paisNacimiento">
+              <option value="">-- Seleccione --</option>
+              <option value="colombia" selected>Colombia</option>
+              <option value="venezuela">Venezuela</option>
+              <option value="ecuador">Ecuador</option>
+              <option value="peru">Perú</option>
+              <option value="brasil">Brasil</option>
+              <option value="mexico">México</option>
+              <option value="argentina">Argentina</option>
+              <option value="chile">Chile</option>
+              <option value="otro">Otro</option>
+            </select>
+            <span class="error-msg">Seleccione un país</span>
+          </div>
+          <div class="form-group">
+            <label for="departamentoNacimiento">Departamento <span class="required-mark">*</span></label>
+            <select id="departamentoNacimiento" name="departamentoNacimiento">
+              <option value="">-- Seleccione --</option>
+              <option value="amazonas">Amazonas</option>
+              <option value="antioquia">Antioquia</option>
+              <option value="arauca">Arauca</option>
+              <option value="atlantico">Atlántico</option>
+              <option value="bolivar">Bolívar</option>
+              <option value="boyaca">Boyacá</option>
+              <option value="caldas">Caldas</option>
+              <option value="caqueta">Caquetá</option>
+              <option value="casanare">Casanare</option>
+              <option value="cauca">Cauca</option>
+              <option value="cesar">Cesar</option>
+              <option value="choco">Chocó</option>
+              <option value="cordoba">Córdoba</option>
+              <option value="cundinamarca">Cundinamarca</option>
+              <option value="guainia">Guainía</option>
+              <option value="guaviare">Guaviare</option>
+              <option value="huila">Huila</option>
+              <option value="laguajira">La Guajira</option>
+              <option value="magdalena">Magdalena</option>
+              <option value="meta">Meta</option>
+              <option value="narino">Nariño</option>
+              <option value="nortedesantander">Norte de Santander</option>
+              <option value="putumayo">Putumayo</option>
+              <option value="quindio">Quindío</option>
+              <option value="risaralda">Risaralda</option>
+              <option value="sanandres">San Andrés y Providencia</option>
+              <option value="santander">Santander</option>
+              <option value="sucre">Sucre</option>
+              <option value="tolima">Tolima</option>
+              <option value="valledelcauca">Valle del Cauca</option>
+              <option value="vaupes">Vaupés</option>
+              <option value="vichada">Vichada</option>
+              <option value="bogota">Bogotá D.C.</option>
+            </select>
+            <span class="error-msg">Seleccione un departamento</span>
+          </div>
+          <div class="form-group">
+            <label for="municipioNacimiento">Municipio <span class="required-mark">*</span></label>
+            <input type="text" id="municipioNacimiento" name="municipioNacimiento"
+                   placeholder="Ej: Bogotá" maxlength="60">
+            <span class="hint">Se cargará según el departamento (con JS)</span>
+            <span class="error-msg">Ingrese el municipio</span>
+          </div>
+        </div>
+      </section>
+
+      <!--
+        SECCIÓN 4: DATOS DE CONTACTO Y CORRESPONDENCIA
+        =================================================
+        - Dirección de correspondencia (campo de texto largo, full-width)
+        - País, departamento, municipio de correspondencia
+        - Teléfono fijo (opcional), celular (obligatorio, 10 dígitos),
+          correo electrónico (obligatorio, validación type="email")
+        - pattern="[0-9]{10}" en celular: exactamente 10 dígitos numéricos
+        - inputmode="tel": muestra teclado telefónico en móviles
+      -->
+      <!-- Sección: Datos de Contacto -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">📞</span> Datos de Contacto y Correspondencia
+        </h2>
+        <div class="form-grid cols-2">
+          <div class="form-group full-width">
+            <label for="direccionCorrespondencia">Dirección de Correspondencia <span class="required-mark">*</span></label>
+            <input type="text" id="direccionCorrespondencia" name="direccionCorrespondencia"
+                   placeholder="Ej: Calle 123 #45-67, Barrio Centro" maxlength="120">
+            <span class="error-msg">Ingrese su dirección</span>
+          </div>
+        </div>
+
+        <div class="form-grid cols-3 mt-2">
+          <div class="form-group">
+            <label for="paisCorrespondencia">País <span class="required-mark">*</span></label>
+            <select id="paisCorrespondencia" name="paisCorrespondencia">
+              <option value="">-- Seleccione --</option>
+              <option value="colombia" selected>Colombia</option>
+              <option value="venezuela">Venezuela</option>
+              <option value="ecuador">Ecuador</option>
+              <option value="peru">Perú</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="departamentoCorrespondencia">Departamento <span class="required-mark">*</span></label>
+            <select id="departamentoCorrespondencia" name="departamentoCorrespondencia">
+              <option value="">-- Seleccione --</option>
+              <option value="amazonas">Amazonas</option>
+              <option value="antioquia">Antioquia</option>
+              <option value="arauca">Arauca</option>
+              <option value="atlantico">Atlántico</option>
+              <option value="bolivar">Bolívar</option>
+              <option value="boyaca">Boyacá</option>
+              <option value="caldas">Caldas</option>
+              <option value="caqueta">Caquetá</option>
+              <option value="casanare">Casanare</option>
+              <option value="cauca">Cauca</option>
+              <option value="cesar">Cesar</option>
+              <option value="choco">Chocó</option>
+              <option value="cordoba">Córdoba</option>
+              <option value="cundinamarca">Cundinamarca</option>
+              <option value="guainia">Guainía</option>
+              <option value="guaviare">Guaviare</option>
+              <option value="huila">Huila</option>
+              <option value="laguajira">La Guajira</option>
+              <option value="magdalena">Magdalena</option>
+              <option value="meta">Meta</option>
+              <option value="narino">Nariño</option>
+              <option value="nortedesantander">Norte de Santander</option>
+              <option value="putumayo">Putumayo</option>
+              <option value="quindio">Quindío</option>
+              <option value="risaralda">Risaralda</option>
+              <option value="sanandres">San Andrés y Providencia</option>
+              <option value="santander">Santander</option>
+              <option value="sucre">Sucre</option>
+              <option value="tolima">Tolima</option>
+              <option value="valledelcauca">Valle del Cauca</option>
+              <option value="vaupes">Vaupés</option>
+              <option value="vichada">Vichada</option>
+              <option value="bogota">Bogotá D.C.</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="municipioCorrespondencia">Municipio <span class="required-mark">*</span></label>
+            <input type="text" id="municipioCorrespondencia" name="municipioCorrespondencia"
+                   placeholder="Ej: Bogotá" maxlength="60">
+          </div>
+        </div>
+
+        <div class="form-grid cols-3 mt-2">
+          <div class="form-group">
+            <label for="telefono">Teléfono Fijo</label>
+            <input type="tel" id="telefono" name="telefono"
+                   placeholder="Ej: 6011234567" maxlength="12"
+                   pattern="[0-9]+" inputmode="tel" title="Solo números">
+          </div>
+          <div class="form-group">
+            <label for="celular">Celular <span class="required-mark">*</span></label>
+            <input type="tel" id="celular" name="celular"
+                   placeholder="Ej: 3001234567" maxlength="10" minlength="10"
+                   pattern="[0-9]{10}" inputmode="tel" title="10 dígitos numéricos">
+            <span class="error-msg">Ingrese un celular válido (10 dígitos)</span>
+          </div>
+          <div class="form-group">
+            <label for="email">Correo Electrónico <span class="required-mark">*</span></label>
+            <input type="email" id="email" name="email"
+                   placeholder="Ej: correo@dominio.com" maxlength="80">
+            <span class="error-msg">Ingrese un correo electrónico válido</span>
+          </div>
+        </div>
+      </section>
+
+      <!--
+        PANEL DE PREVISUALIZACIÓN
+        ==========================
+        Muestra un resumen de los datos ingresados antes de continuar.
+        Por defecto está oculto (.preview-panel tiene display:none en CSS).
+        Al hacer clic en "Previsualizar", JavaScript debería:
+        1. Leer los valores de todos los campos del formulario
+        2. Colocarlos en los <span class="preview-value"> correspondientes
+        3. Hacer visible el panel (cambiar display a block)
+        Cada preview-item tiene un label y un value (por defecto "---").
+      -->
+      <!-- Panel de previsualización -->
+      <div class="preview-panel" id="previewDatos">
+        <h3>👁️ Previsualización de Datos Personales</h3>
+        <div class="preview-grid">
+          <div class="preview-item">
+            <span class="preview-label">Nombre Completo</span>
+            <span class="preview-value" id="prevNombre">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Documento</span>
+            <span class="preview-value" id="prevDocumento">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Fecha de Nacimiento</span>
+            <span class="preview-value" id="prevFechaNac">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Nacionalidad</span>
+            <span class="preview-value" id="prevNacionalidad">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Celular</span>
+            <span class="preview-value" id="prevCelular">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Correo Electrónico</span>
+            <span class="preview-value" id="prevEmail">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Dirección</span>
+            <span class="preview-value" id="prevDireccion">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Lugar de Nacimiento</span>
+            <span class="preview-value" id="prevLugarNac">---</span>
+          </div>
+        </div>
+      </div>
+
+      <!--
+        ACCIONES DEL FORMULARIO
+        =========================
+        Barra inferior con tres botones:
+        - "Previsualizar": botón JS que muestra el panel de previsualización
+        - "← Volver": enlace <a> que regresa a index.html (login)
+        - "Siguiente →": enlace <a> que avanza a formacion-academica.html (paso 2)
+        NOTA: Se usan <a> en vez de <button type="submit"> porque la
+        navegación entre pasos es directa (no hay envío real al servidor).
+      -->
+      <!-- Acciones del formulario -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="btnPreview">
+          👁️ Previsualizar
+        </button>
+        <div class="btn-group">
+          <a href="index.html" class="btn btn-secondary">← Volver</a>
+          <a href="formacion-academica.html" class="btn btn-primary">
+            Siguiente: Formación Académica →
+          </a>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- FOOTER: Pie de página compartido en todas las páginas -->
+  <footer>
+    <p>Facultad de Ingeniería &mdash; <strong>Desarrollo Web</strong> &mdash; Parcial II &mdash; 2026</p>
+  </footer>
+
+  <!--
+    SCRIPT: datos-personales.js
+    Carga dinámicamente las opciones de los <select> (países, tipo de documento,
+    sexo) desde arreglos de JavaScript, y maneja la visibilidad condicional
+    del campo "País de Origen" al cambiar la nacionalidad.
+  -->
+  <!-- JS externo -->
+  <script src="js/datos-personales.js"></script>
+</body>
+</html>

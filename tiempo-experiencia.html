@@ -1,0 +1,295 @@
+<!--
+  ============================================================
+  TIEMPO-EXPERIENCIA.HTML — Paso 4 del Wizard: Tiempo de Experiencia
+  ============================================================
+  PROPÓSITO:
+  Muestra el cálculo automático del tiempo total de experiencia laboral
+  (público, privado, independiente) y permite agregar registros detallados
+  por ocupación/área.
+
+  ESTRUCTURA:
+  ┌─ <header> + <nav> (pasos 1-3 completados ✓, paso 4 activo)
+  ├─ <main>
+  │   ├─ Sección: Resumen de Tiempo (3 campos disabled auto-calculados)
+  │   │   · Sector Público, Sector Privado, Independiente
+  │   │   · TIEMPO TOTAL (campo destacado con estilo especial)
+  │   ├─ Sección: Detalle por Ocupación (DINÁMICA)
+  │   │   ├─ Mini-formulario: ocupación, sector, empresa, fechas
+  │   │   └─ Tabla #tablaDetalleExp (filas dinámicas con JS)
+  │   ├─ Panel de Previsualización
+  │   └─ Botones: ← Anterior (paso 3), Siguiente → (paso 5)
+  └─ <footer>
+
+  NOTA: Los campos de resumen (tiempoPublico, tiempoPrivado, etc.)
+  tienen "disabled" porque sus valores se calculan automáticamente
+  con JavaScript a partir de las experiencias del paso 3.
+
+  NAVEGACIÓN:
+  - ← Anterior: experiencia-laboral.html (paso 3)
+  - Siguiente →: certificacion.html (paso 5)
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoja de Vida - Tiempo de Experiencia</title>
+  <!-- Hoja de estilos compartida -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER: Barra superior con nombre de la app y avatar -->
+  <header>
+    <div class="header-inner">
+      <a href="index.html"><h1>Hoja de <span>Vida</span></h1></a>
+      <div class="header-user">
+        <span>Usuario</span>
+        <div class="avatar">U</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAV (STEPPER): Pasos 1-3 completados (✓), paso 4 activo, paso 5 disabled -->
+  <nav>
+    <div class="nav-inner">
+      <a href="datos-personales.html" class="completed">
+        <span class="step-num">✓</span>
+        <span>Datos Personales</span>
+      </a>
+      <a href="formacion-academica.html" class="completed">
+        <span class="step-num">✓</span>
+        <span>Formación Académica</span>
+      </a>
+      <a href="experiencia-laboral.html" class="completed">
+        <span class="step-num">✓</span>
+        <span>Experiencia Laboral</span>
+      </a>
+      <a href="tiempo-experiencia.html" class="active">
+        <span class="step-num">4</span>
+        <span>Tiempo Experiencia</span>
+      </a>
+      <a href="certificacion.html" class="disabled">
+        <span class="step-num">5</span>
+        <span>Certificación</span>
+      </a>
+      <a href="index.html">
+        <span class="step-num">🚪</span>
+        <span>Cerrar Sesión</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+    <!-- Barra de progreso: pasos 1-3 completados, paso 4 actual -->
+    <div class="progress-bar">
+      <div class="progress-step completed"></div>
+      <div class="progress-step completed"></div>
+      <div class="progress-step completed"></div>
+      <div class="progress-step current"></div>
+      <div class="progress-step"></div>
+    </div>
+
+    <form id="formTiempoExperiencia">
+
+      <!--
+        SECCIÓN 1: RESUMEN DE TIEMPO TOTAL
+        ====================================
+        Tres campos "disabled" que muestran los totales calculados
+        automáticamente (con JS) a partir de las experiencias del paso 3.
+        - tiempoPublico: años y meses en sector público
+        - tiempoPrivado: años y meses en sector privado
+        - tiempoIndependiente: años y meses como independiente
+        
+        El .divider es una línea horizontal que separa los parciales del total.
+        
+        TIEMPO TOTAL: Campo destacado con estilos inline especiales
+        (font-size más grande, color azul, fondo celeste) para resaltar.
+        
+        ⚠️ La alerta .alert-warning informa que los valores son auto-calculados.
+      -->
+      <!-- Sección: Resumen calculado -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">⏱️</span> Tiempo Total de Experiencia
+        </h2>
+
+        <div class="alert alert-warning">
+          ⚠️ El tiempo total será calculado automáticamente a partir de las experiencias registradas. Puede agregar registros adicionales si necesita detallar la experiencia por ocupación o área.
+        </div>
+
+        <!-- Resumen de tiempos -->
+        <div class="form-grid cols-3">
+          <div class="form-group">
+            <label>Experiencia en Sector Público</label>
+            <input type="text" id="tiempoPublico" name="tiempoPublico"
+                   value="0 años, 0 meses" disabled>
+          </div>
+          <div class="form-group">
+            <label>Experiencia en Sector Privado</label>
+            <input type="text" id="tiempoPrivado" name="tiempoPrivado"
+                   value="0 años, 0 meses" disabled>
+          </div>
+          <div class="form-group">
+            <label>Experiencia como Independiente</label>
+            <input type="text" id="tiempoIndependiente" name="tiempoIndependiente"
+                   value="0 años, 0 meses" disabled>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="form-grid cols-2">
+          <div class="form-group">
+            <label style="font-size: 1rem; color: var(--primary); font-weight: 700;">
+              TIEMPO TOTAL DE EXPERIENCIA
+            </label>
+            <input type="text" id="tiempoTotal" name="tiempoTotal"
+                   value="0 años, 0 meses" disabled
+                   style="font-size: 1.1rem; font-weight: 700; color: var(--primary); background: #eff6ff; border-color: var(--primary-light);">
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección: Detalle por ocupación -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">📝</span> Detalle de Experiencia por Ocupación
+        </h2>
+
+        <div class="alert alert-info">
+          ℹ️ Puede agregar registros detallados para especificar la experiencia por área u ocupación.
+        </div>
+
+        <!-- Formulario para agregar detalle -->
+        <div id="formDetalleExperiencia">
+          <div class="form-grid cols-3">
+            <div class="form-group">
+              <label for="ocupacion">Ocupación o Área <span class="required-mark">*</span></label>
+              <input type="text" id="ocupacion" name="ocupacion"
+                     placeholder="Ej: Desarrollo de Software" maxlength="100">
+              <span class="error-msg">Ingrese la ocupación o área</span>
+            </div>
+            <div class="form-group">
+              <label for="sectorDetalle">Sector <span class="required-mark">*</span></label>
+              <select id="sectorDetalle" name="sectorDetalle">
+                <option value="">-- Seleccione --</option>
+                <option value="publico">Público</option>
+                <option value="privado">Privado</option>
+                <option value="independiente">Independiente</option>
+              </select>
+              <span class="error-msg">Seleccione el sector</span>
+            </div>
+            <div class="form-group">
+              <label for="empresaDetalle">Empresa / Entidad <span class="required-mark">*</span></label>
+              <input type="text" id="empresaDetalle" name="empresaDetalle"
+                     placeholder="Ej: Empresa XYZ S.A.S" maxlength="120">
+              <span class="error-msg">Ingrese la empresa o entidad</span>
+            </div>
+          </div>
+
+          <div class="form-grid cols-4 mt-2">
+            <div class="form-group">
+              <label for="fechaInicioDetalle">Fecha Inicio <span class="required-mark">*</span></label>
+              <input type="date" id="fechaInicioDetalle" name="fechaInicioDetalle"
+                     min="1960-01-01" max="2026-12-31">
+              <span class="error-msg">Seleccione fecha de inicio</span>
+            </div>
+            <div class="form-group">
+              <label for="fechaFinDetalle">Fecha Fin</label>
+              <input type="date" id="fechaFinDetalle" name="fechaFinDetalle"
+                     min="1960-01-01" max="2026-12-31">
+              <span class="hint">Vacío = actual</span>
+            </div>
+            <div class="form-group">
+              <label>Tiempo Calculado</label>
+              <input type="text" id="tiempoCalculado" name="tiempoCalculado"
+                     value="--" disabled>
+              <span class="hint">Se calcula con JS</span>
+            </div>
+            <div class="form-group" style="display: flex; align-items: flex-end;">
+              <button type="button" class="btn btn-accent btn-sm" id="btnAgregarDetalle">
+                ➕ Agregar Registro
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de detalle de experiencia -->
+        <div class="records-container">
+          <div class="records-header">
+            <h4>Registros de Experiencia Detallada</h4>
+          </div>
+          <table class="records-table" id="tablaDetalleExp">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Ocupación / Área</th>
+                <th>Empresa</th>
+                <th>Sector</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Tiempo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Los registros se agregarán dinámicamente con JS -->
+            </tbody>
+          </table>
+          <div class="records-empty" id="emptyDetalleExp">
+            No se han agregado registros de detalle de experiencia aún.
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel de previsualización -->
+      <div class="preview-panel" id="previewTiempo">
+        <h3>👁️ Previsualización de Tiempo de Experiencia</h3>
+        <div class="preview-grid">
+          <div class="preview-item">
+            <span class="preview-label">Sector Público</span>
+            <span class="preview-value" id="prevPublico">0 años, 0 meses</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Sector Privado</span>
+            <span class="preview-value" id="prevPrivado">0 años, 0 meses</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Independiente</span>
+            <span class="preview-value" id="prevIndep">0 años, 0 meses</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Total</span>
+            <span class="preview-value" id="prevTotal">0 años, 0 meses</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones del formulario -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="btnPreview">
+          👁️ Previsualizar
+        </button>
+        <div class="btn-group">
+          <a href="experiencia-laboral.html" class="btn btn-secondary">← Anterior</a>
+          <a href="certificacion.html" class="btn btn-primary">
+            Siguiente: Certificación →
+          </a>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Facultad de Ingeniería &mdash; <strong>Desarrollo Web</strong> &mdash; Parcial II &mdash; 2026</p>
+  </footer>
+
+  <!-- JS externo (se agregará después) -->
+  <!-- <script src="js/tiempo-experiencia.js"></script> -->
+</body>
+</html>

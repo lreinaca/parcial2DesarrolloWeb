@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoja de Vida - Panel de Administración</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <h1>Hoja de <span>Vida</span> &mdash; Administración</h1>
+      <div class="header-user">
+        <span>Administrador</span>
+        <div class="avatar" style="background: var(--error);">A</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAV Admin -->
+  <nav>
+    <div class="nav-inner">
+      <a href="admin.html" class="active">
+        <span class="step-num">📋</span>
+        <span>Hojas de Vida</span>
+      </a>
+      <a href="index.html">
+        <span class="step-num">🚪</span>
+        <span>Cerrar Sesión</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- Título y filtros -->
+    <section>
+      <h2 class="section-title">
+        <span class="icon">📋</span> Gestión de Hojas de Vida
+      </h2>
+
+      <div class="admin-toolbar">
+        <div class="filters">
+          <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-medium);">Filtrar por estado:</span>
+          <button type="button" class="filter-btn active" data-filter="todas">Todas</button>
+          <button type="button" class="filter-btn" data-filter="diligenciada">⏳ Diligenciadas</button>
+          <button type="button" class="filter-btn" data-filter="aceptada">✅ Aceptadas</button>
+          <button type="button" class="filter-btn" data-filter="rechazada">❌ Rechazadas</button>
+        </div>
+        <div>
+          <span class="badge badge-info" id="contadorTotal">Total: 0 hojas de vida</span>
+        </div>
+      </div>
+
+      <!-- Tabla de hojas de vida -->
+      <table class="records-table" id="tablaHojasVida">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre Completo</th>
+            <th>Documento</th>
+            <th>Correo</th>
+            <th>Fecha Diligenciamiento</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Filas de ejemplo (se cargarán con JS desde un arreglo) -->
+          <tr>
+            <td>1</td>
+            <td>Juan Carlos García López</td>
+            <td>CC 1234567890</td>
+            <td>juan.garcia@email.com</td>
+            <td>2026-04-01</td>
+            <td><span class="badge badge-warning">⏳ Diligenciada</span></td>
+            <td>
+              <div class="actions-cell">
+                <button type="button" class="btn btn-primary btn-sm">Ver</button>
+                <button type="button" class="btn btn-secondary btn-sm">Cambiar Estado</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>María Fernanda Rodríguez</td>
+            <td>CC 9876543210</td>
+            <td>maria.rod@email.com</td>
+            <td>2026-03-28</td>
+            <td><span class="badge badge-success">✅ Aceptada</span></td>
+            <td>
+              <div class="actions-cell">
+                <button type="button" class="btn btn-primary btn-sm">Ver</button>
+                <button type="button" class="btn btn-secondary btn-sm">Cambiar Estado</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Carlos Andrés Martínez</td>
+            <td>CC 5566778899</td>
+            <td>carlos.m@email.com</td>
+            <td>2026-03-25</td>
+            <td><span class="badge badge-error">❌ Rechazada</span></td>
+            <td>
+              <div class="actions-cell">
+                <button type="button" class="btn btn-primary btn-sm">Ver</button>
+                <button type="button" class="btn btn-secondary btn-sm">Cambiar Estado</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Modal/Panel de detalle (visible cuando se hace clic en "Ver") -->
+    <section id="panelDetalleHV" class="hidden">
+      <h2 class="section-title">
+        <span class="icon">👤</span> Detalle de Hoja de Vida
+      </h2>
+
+      <!-- Información del candidato -->
+      <div class="preview-grid">
+        <div class="preview-item">
+          <span class="preview-label">Nombre Completo</span>
+          <span class="preview-value" id="detNombre">Juan Carlos García López</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">Documento</span>
+          <span class="preview-value" id="detDocumento">CC 1234567890</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">Sexo</span>
+          <span class="preview-value" id="detSexo">Masculino</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">Fecha Nacimiento</span>
+          <span class="preview-value" id="detFechaNac">1990-05-15</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">Nacionalidad</span>
+          <span class="preview-value" id="detNacionalidad">Colombiana</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">Correo</span>
+          <span class="preview-value" id="detEmail">juan.garcia@email.com</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">Celular</span>
+          <span class="preview-value" id="detCelular">3001234567</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">Dirección</span>
+          <span class="preview-value" id="detDireccion">Calle 123 #45-67, Bogotá</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 class="section-subtitle">Formación Académica</h3>
+      <div class="preview-grid">
+        <div class="preview-item">
+          <span class="preview-label">Último Estudio</span>
+          <span class="preview-value" id="detEstudio">Ing. de Sistemas - Universidad Nacional</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">Total Estudios</span>
+          <span class="preview-value" id="detTotalEst">2</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">Idiomas</span>
+          <span class="preview-value" id="detIdiomas">Inglés (Bien), Francés (Regular)</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 class="section-subtitle">Experiencia Laboral</h3>
+      <div class="preview-grid">
+        <div class="preview-item">
+          <span class="preview-label">Total Experiencias</span>
+          <span class="preview-value" id="detTotalExp">3</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-label">Tiempo Total</span>
+          <span class="preview-value" id="detTiempoTotal">5 años, 3 meses</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Cambiar estado -->
+      <h3 class="section-subtitle">Gestionar Estado</h3>
+      <div class="form-grid cols-3">
+        <div class="form-group">
+          <label for="nuevoEstado">Nuevo Estado <span class="required-mark">*</span></label>
+          <select id="nuevoEstado" name="nuevoEstado">
+            <option value="">-- Seleccione --</option>
+            <option value="diligenciada">⏳ Diligenciada</option>
+            <option value="aceptada">✅ Aceptada</option>
+            <option value="rechazada">❌ Rechazada</option>
+          </select>
+        </div>
+        <div class="form-group span-2">
+          <label for="observaciones">Observaciones</label>
+          <textarea id="observaciones" name="observaciones" rows="2"
+                    placeholder="Ingrese observaciones para el usuario..." maxlength="500"></textarea>
+        </div>
+      </div>
+
+      <div class="mt-2">
+        <button type="button" class="btn btn-primary" id="btnGuardarEstado">
+          💾 Guardar Cambios
+        </button>
+        <button type="button" class="btn btn-secondary" id="btnCerrarDetalle">
+          Cerrar
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Facultad de Ingeniería &mdash; <strong>Desarrollo Web</strong> &mdash; Panel de Administración &mdash; 2026</p>
+  </footer>
+
+  <!-- JS externo (se agregará después) -->
+  <!-- <script src="js/admin.js"></script> -->
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!-- 
+  Documento HTML5 para la página de Certificación (Paso 5 de 5)
+  Última etapa del formulario de Hoja de Vida donde el usuario
+  declara la veracidad de la información, firma digitalmente 
+  y envía su hoja de vida.
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- Hace la página responsive en dispositivos móviles -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoja de Vida - Certificación</title>
+  <!-- Hoja de estilos compartida por todas las páginas del proyecto -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER: Encabezado superior con el título de la aplicación
+       y la información del usuario actual.
+       ============================================================ -->
+  <header>
+    <div class="header-inner">
+      <a href="index.html"><h1>Hoja de <span>Vida</span></h1></a>
+      <!-- Muestra el nombre del usuario y su avatar -->
+      <div class="header-user">
+        <span>Usuario</span>
+        <div class="avatar">U</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       NAV: Barra de navegación tipo "wizard" (asistente por pasos).
+       Los pasos anteriores (1-4) aparecen como "completed" (✓),
+       y el paso actual (5 - Certificación) aparece como "active".
+       ============================================================ -->
+  <nav>
+    <div class="nav-inner">
+      <!-- Paso 1: Datos Personales (completado) -->
+      <a href="datos-personales.html" class="completed">
+        <span class="step-num">✓</span>
+        <span>Datos Personales</span>
+      </a>
+      <!-- Paso 2: Formación Académica (completado) -->
+      <a href="formacion-academica.html" class="completed">
+        <span class="step-num">✓</span>
+        <span>Formación Académica</span>
+      </a>
+      <!-- Paso 3: Experiencia Laboral (completado) -->
+      <a href="experiencia-laboral.html" class="completed">
+        <span class="step-num">✓</span>
+        <span>Experiencia Laboral</span>
+      </a>
+      <!-- Paso 4: Tiempo de Experiencia (completado) -->
+      <a href="tiempo-experiencia.html" class="completed">
+        <span class="step-num">✓</span>
+        <span>Tiempo Experiencia</span>
+      </a>
+      <!-- Paso 5: Certificación (paso actual / activo) -->
+      <a href="certificacion.html" class="active">
+        <span class="step-num">5</span>
+        <span>Certificación</span>
+      </a>
+      <a href="index.html">
+        <span class="step-num">🚪</span>
+        <span>Cerrar Sesión</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       MAIN: Contenido principal de la página.
+       Contiene el formulario de certificación con las secciones:
+       1) Declaración jurada
+       2) Información del declarante / firma
+       3) Estado de la hoja de vida
+       4) Resumen general (previsualización)
+       5) Botones de acción
+       ============================================================ -->
+  <main>
+    <!-- Barra de progreso visual: muestra 5 pasos, los 4 primeros 
+         como "completed" y el 5to como "current" (paso actual) -->
+    <div class="progress-bar">
+      <div class="progress-step completed"></div>
+      <div class="progress-step completed"></div>
+      <div class="progress-step completed"></div>
+      <div class="progress-step completed"></div>
+      <div class="progress-step current"></div>
+    </div>
+
+    <!-- Formulario de certificación: al enviarse (submit), 
+         se validan los campos obligatorios con JS -->
+    <form id="formCertificacion">
+
+      <!-- ========================================================
+           SECCIÓN 1: DECLARACIÓN Y CERTIFICACIÓN
+           Muestra el texto legal de la declaración jurada y 
+           dos preguntas obligatorias (radio buttons):
+           - ¿Los datos son verídicos?
+           - ¿Se encuentra inhabilitado(a)?
+           ======================================================== -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">✅</span> Declaración y Certificación
+        </h2>
+
+        <!-- Alerta visual que advierte al usuario leer antes de certificar -->
+        <div class="alert alert-warning">
+          ⚠️ Lea cuidadosamente las siguientes declaraciones antes de certificar su hoja de vida.
+        </div>
+
+        <!-- Bloque con el texto de la declaración jurada.
+             Contiene los puntos legales que el usuario certifica:
+             - Veracidad de la información
+             - No estar inhabilitado
+             - No tener sanciones
+             - Autorización de verificación -->
+        <div style="background: var(--bg-light); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; line-height: 1.8;">
+          <p style="font-size: 0.92rem; color: var(--text-dark); margin-bottom: 1rem;">
+            Yo, como persona natural identificada con los datos consignados en esta hoja de vida,
+            <strong>DECLARO</strong> bajo la gravedad de juramento que:
+          </p>
+          <ul style="list-style: disc; padding-left: 1.5rem; font-size: 0.88rem; color: var(--text-medium);">
+            <li style="margin-bottom: 0.5rem;">
+              Toda la información aquí consignada es <strong>verídica y comprobable</strong>.
+            </li>
+            <li style="margin-bottom: 0.5rem;">
+              No me encuentro <strong>inhabilitado(a)</strong> para ejercer cargos públicos ni para
+              celebrar contratos con el Estado, de conformidad con las disposiciones legales vigentes.
+            </li>
+            <li style="margin-bottom: 0.5rem;">
+              No he sido sancionado(a) disciplinaria, fiscal o penalmente con inhabilidad para
+              ejercer cargos públicos.
+            </li>
+            <li style="margin-bottom: 0.5rem;">
+              Autorizo la verificación de los datos aquí registrados por parte de la entidad
+              correspondiente.
+            </li>
+          </ul>
+        </div>
+
+        <!-- Preguntas obligatorias (*) con radio buttons en grilla de 2 columnas -->
+        <div class="form-grid cols-2">
+          <!-- Pregunta 1: ¿Datos verídicos? (obligatorio) -->
+          <div class="form-group">
+            <label>¿Los datos registrados son verídicos? <span class="required-mark">*</span></label>
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="datosVeridicos" value="si"> Sí, certifico que son verídicos
+              </label>
+              <label>
+                <input type="radio" name="datosVeridicos" value="no"> No
+              </label>
+            </div>
+            <!-- Mensaje de error que se muestra cuando no se selecciona opción -->
+            <span class="error-msg">Debe confirmar la veracidad de los datos</span>
+          </div>
+          <!-- Pregunta 2: ¿Se encuentra inhabilitado? (obligatorio) -->
+          <div class="form-group">
+            <label>¿Se encuentra inhabilitado(a)? <span class="required-mark">*</span></label>
+            <div class="radio-group">
+              <label>
+                <input type="radio" name="inhabilitado" value="no"> No me encuentro inhabilitado(a)
+              </label>
+              <label>
+                <input type="radio" name="inhabilitado" value="si"> Sí me encuentro inhabilitado(a)
+              </label>
+            </div>
+            <span class="error-msg">Debe indicar su estado de habilitación</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECCIÓN 3: ESTADO DE LA HOJA DE VIDA
+           Muestra el estado actual (Diligenciada, Aceptada, Rechazada)
+           y las observaciones del administrador.
+           Ambos campos son de solo lectura para el usuario.
+           ======================================================== -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">📊</span> Estado de la Hoja de Vida
+        </h2>
+
+        <div class="form-grid cols-2">
+          <!-- Estado actual: se muestra como un badge/etiqueta de color.
+               El valor lo cambia el administrador desde admin.html -->
+          <div class="form-group">
+            <label>Estado Actual</label>
+            <div>
+              <span class="badge badge-warning" id="estadoHV">⏳ Diligenciada</span>
+            </div>
+            <span class="hint mt-1">El estado cambia según la revisión del administrador</span>
+          </div>
+          <!-- Observaciones: campo de texto deshabilitado donde el administrador
+               puede dejar comentarios sobre la hoja de vida -->
+          <div class="form-group">
+            <label>Observaciones del Administrador</label>
+            <textarea id="observacionesAdmin" name="observacionesAdmin" rows="3"
+                      placeholder="Sin observaciones aún..." disabled></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECCIÓN 4: PANEL DE PREVISUALIZACIÓN / RESUMEN
+           Muestra un resumen rápido con los datos principales 
+           recopilados en todos los pasos anteriores:
+           nombre, documento, estudios, experiencias, tiempo total
+           y estado de la hoja de vida.
+           Los valores se llenan dinámicamente con JS.
+           ======================================================== -->
+      <div class="preview-panel" id="previewResumen">
+        <h3>👁️ Resumen General de la Hoja de Vida</h3>
+        <div class="preview-grid">
+          <div class="preview-item">
+            <span class="preview-label">Nombre</span>
+            <span class="preview-value" id="resNombre">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Documento</span>
+            <span class="preview-value" id="resDocumento">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Estudios Superiores</span>
+            <span class="preview-value" id="resEstudios">0</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Experiencias Laborales</span>
+            <span class="preview-value" id="resExperiencias">0</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Tiempo Total de Experiencia</span>
+            <span class="preview-value" id="resTotalExp">0 años, 0 meses</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Estado</span>
+            <span class="preview-value" id="resEstado">Diligenciada</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           SECCIÓN 5: BOTONES DE ACCIÓN DEL FORMULARIO
+           - "Previsualizar Resumen": muestra u oculta el panel de resumen (con JS)
+           - "← Anterior": navega al paso anterior (tiempo-experiencia.html)
+           - "Finalizar y Enviar": envía el formulario (submit) para
+             guardar la hoja de vida completa
+           ======================================================== -->
+      <div class="form-actions">
+        <!-- Botón para mostrar/ocultar el panel de previsualización -->
+        <button type="button" class="btn btn-secondary" id="btnPreview">
+          👁️ Previsualizar Resumen
+        </button>
+        <div class="btn-group">
+          <!-- Enlace para volver al paso anterior -->
+          <a href="tiempo-experiencia.html" class="btn btn-secondary">← Anterior</a>
+          <!-- Botón de envío final del formulario (tipo submit) -->
+          <button type="submit" class="btn btn-success">
+            ✅ Finalizar y Enviar Hoja de Vida
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- ============================================================
+       FOOTER: Pie de página con información de la institución
+       ============================================================ -->
+  <footer>
+    <p>Facultad de Ingeniería &mdash; <strong>Desarrollo Web</strong> &mdash; Parcial II &mdash; 2026</p>
+  </footer>
+
+  <!-- Archivo JavaScript externo para la lógica de esta página
+       (validaciones, autocompletado, envío del formulario, etc.)
+       Actualmente comentado porque aún no se ha creado -->
+  <!-- <script src="js/certificacion.js"></script> -->
+</body>
+</html>

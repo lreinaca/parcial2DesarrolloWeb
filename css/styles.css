@@ -1,0 +1,1304 @@
+/*
+  =====================================================================
+  STYLES.CSS - Hoja de estilos principal del proyecto "Hoja de Vida"
+  =====================================================================
+  Este archivo contiene TODOS los estilos del proyecto. No se usa
+  ningún framework externo (Bootstrap, Tailwind, etc.) ni CDN.
+  Todo funciona 100% offline.
+
+  ESTRUCTURA DEL ARCHIVO (en orden):
+  1. RESET & BASE       → Reseteo universal y variables CSS
+  2. HEADER             → Barra superior (logo, nombre usuario)
+  3. NAV                → Navegación tipo wizard/stepper por pasos
+  4. MAIN               → Contenedor principal del contenido
+  5. SECTIONS           → Tarjetas blancas que agrupan formularios
+  6. FORMS              → Sistema de grillas y estilos de inputs
+  7. BUTTONS            → Variantes de botones (primary, secondary, etc.)
+  8. RECORDS TABLE      → Tablas dinámicas (estudios, experiencias, etc.)
+  9. PREVIEW CARD       → Panel de previsualización de datos
+  10. STATUS BADGES     → Etiquetas de estado (Aceptada, Rechazada, etc.)
+  11. LOGIN PAGE        → Página de inicio de sesión
+  12. ADMIN PANEL       → Panel del administrador (filtros, cards)
+  13. FOOTER            → Pie de página
+  14. UTILITIES         → Clases de utilidad (márgenes, alertas, etc.)
+  15. PROGRESS BAR      → Barra visual de progreso por pasos
+  16. RESPONSIVE        → Media queries para tablet (768px) y móvil (480px)
+
+  CONVENCIÓN DE COLORES:
+  - Azul oscuro (--primary)  → Elementos principales, encabezados
+  - Dorado (--accent)        → Destacados, paso activo, botones especiales
+  - Verde (--success)        → Éxito, pasos completados
+  - Rojo (--error)           → Errores, rechazados
+  - Amarillo (--warning)     → Advertencias, pendientes
+  =====================================================================
+*/
+
+/* ========== 1. RESET & BASE ========== */
+
+/*
+  RESET UNIVERSAL:
+  Elimina márgenes, paddings y aplica box-sizing: border-box a TODOS
+  los elementos. Esto evita comportamientos inesperados del modelo de caja.
+  - *        → todos los elementos
+  - *::before, *::after → pseudo-elementos (contenido generado con CSS)
+*/
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* El padding y border se incluyen DENTRO del ancho total */
+}
+
+/*
+  VARIABLES CSS (Custom Properties):
+  Se definen en :root (equivale al <html>) para que estén disponibles
+  en TODO el documento. Se usan así: var(--nombre-variable).
+  Ventaja: si cambias un color aquí, se actualiza en TODO el proyecto.
+*/
+:root {
+  /* Colores principales (azul institucional) */
+  --primary: #1a3c6e;        /* Azul oscuro - color principal */
+  --primary-light: #2a5aa6;  /* Azul más claro - hover, focus */
+  --primary-dark: #0f2847;   /* Azul más oscuro - header, footer */
+
+  /* Color de acento (dorado/amarillo) para destacar elementos */
+  --accent: #e8a317;         /* Dorado principal */
+  --accent-light: #f5c548;   /* Dorado claro - hover */
+
+  /* Fondos */
+  --bg-light: #f4f6f9;       /* Gris muy claro - fondo general de la página */
+  --bg-white: #ffffff;        /* Blanco - fondo de tarjetas/secciones */
+
+  /* Textos (de más oscuro a más claro) */
+  --text-dark: #1e1e2f;      /* Casi negro - títulos, texto principal */
+  --text-medium: #4a4a5a;    /* Gris medio - labels, texto secundario */
+  --text-light: #7a7a8a;     /* Gris claro - hints, placeholders */
+
+  /* Bordes */
+  --border: #d0d5dd;         /* Gris para bordes de inputs */
+  --border-focus: #2a5aa6;   /* Azul para el borde cuando el input tiene foco */
+
+  /* Colores semánticos (estados) */
+  --success: #16a34a;        /* Verde - éxito, completado, aceptado */
+  --success-bg: #dcfce7;     /* Verde claro - fondo de alertas de éxito */
+  --error: #dc2626;          /* Rojo - error, obligatorio, rechazado */
+  --error-bg: #fef2f2;       /* Rojo claro - fondo de alertas de error */
+  --warning: #f59e0b;        /* Amarillo - advertencia, diligenciada */
+  --warning-bg: #fffbeb;     /* Amarillo claro - fondo de alertas de advertencia */
+
+  /* Sombras (de menor a mayor intensidad) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);   /* Sombra sutil para tarjetas */
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);    /* Sombra media para hover */
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);   /* Sombra grande para modales */
+
+  /* Bordes redondeados */
+  --radius-sm: 6px;          /* Inputs, botones */
+  --radius-md: 10px;         /* Cards, paneles */
+  --radius-lg: 16px;         /* Secciones principales */
+
+  /* Transición global: duración y tipo de animación */
+  --transition: 0.25s ease;  /* 250ms con suavizado para hover, focus, etc. */
+}
+
+/*
+  BASE HTML:
+  - font-size: 16px → tamaño base para rem (1rem = 16px)
+  - scroll-behavior: smooth → scroll suave al hacer clic en anclas (#)
+*/
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+/*
+  BASE BODY:
+  - font-family: 'Segoe UI' (Windows) → system-ui → -apple-system (Mac) → sans-serif
+    Son fuentes del SISTEMA OPERATIVO, no requieren internet.
+  - display: flex + flex-direction: column → el body es un flexbox vertical
+    para que el footer siempre quede al final (con margin-top: auto en footer)
+  - min-height: 100vh → ocupa al menos toda la altura de la ventana
+*/
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  line-height: 1.6;        /* Espaciado entre líneas de texto */
+  min-height: 100vh;       /* vh = viewport height (altura de la ventana) */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Enlaces globales: azul sin subrayado, cambian a dorado en hover */
+a {
+  color: var(--primary-light);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+/* Imágenes: nunca desbordan su contenedor */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ========== 2. HEADER ==========
+   Barra superior fija (sticky) con gradiente azul oscuro.
+   Contiene el logo "Hoja de Vida" y el nombre del usuario con avatar.
+   Se usa en TODAS las páginas del proyecto.
+*/
+
+/*
+  header:
+  - linear-gradient(135deg, ...) → gradiente diagonal de azul muy oscuro a azul
+  - position: sticky + top: 0 → se queda pegado arriba al hacer scroll
+  - z-index: 100 → se superpone sobre el contenido al hacer scroll
+*/
+header {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: #fff;
+  padding: 1rem 2rem;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Contenedor interno centrado con ancho máximo de 1200px.
+   Usa flexbox para poner logo a la izquierda y usuario a la derecha */
+header .header-inner {
+  max-width: 1200px;
+  margin: 0 auto;        /* margin auto centra horizontalmente */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Separa elementos a los extremos */
+}
+
+header h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* La palabra "Vida" en el título se muestra en color dorado */
+header h1 span {
+  color: var(--accent);
+}
+
+/* Sección del usuario: nombre + avatar en fila */
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;           /* Espacio entre nombre y avatar */
+  font-size: 0.9rem;
+}
+
+/* Avatar circular con la inicial del usuario */
+.header-user .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;     /* Lo hace circular */
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--primary-dark);
+}
+
+/* ========== 3. NAV (Navegación tipo Wizard/Stepper) ==========
+   Barra de navegación que muestra los 5 pasos del formulario.
+   Cada paso puede estar en uno de 3 estados:
+   - .active    → Paso actual (borde dorado abajo, texto azul)
+   - .completed → Paso ya completado (número reemplazado por ✓ verde)
+   - .disabled  → Paso aún no disponible (gris, no se puede hacer clic)
+*/
+nav {
+  background: var(--bg-white);
+  border-bottom: 2px solid var(--border);
+  padding: 0 2rem;
+}
+
+/* Contenedor flex horizontal con scroll horizontal en pantallas pequeñas */
+nav .nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;       /* Permite scroll horizontal si no caben todos los pasos */
+}
+
+/* Cada enlace/paso de la navegación */
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.85rem 1.2rem;
+  color: var(--text-medium);
+  font-size: 0.88rem;
+  font-weight: 500;
+  border-bottom: 3px solid transparent; /* Borde invisible, se activa con .active */
+  transition: all var(--transition);
+  white-space: nowrap;    /* Evita que el texto se parta en dos líneas */
+}
+
+nav a:hover {
+  color: var(--primary);
+  background: var(--bg-light);
+}
+
+/* Paso ACTIVO: texto azul y línea dorada abajo */
+nav a.active {
+  color: var(--primary);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+
+/* Paso DESHABILITADO: gris, no interactivo, semitransparente */
+nav a.disabled {
+  color: var(--text-light);
+  pointer-events: none;   /* Ignora clics */
+  opacity: 0.5;
+}
+
+/*
+  Indicadores numéricos circulares de cada paso (1, 2, 3, 4, 5).
+  Por defecto son gris. Cambian de color según el estado del paso.
+*/
+nav a .step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--border);      /* Gris por defecto */
+  color: var(--text-medium);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Número del paso ACTIVO: fondo dorado */
+nav a.active .step-num {
+  background: var(--accent);
+  color: var(--primary-dark);
+}
+
+/* Número del paso COMPLETADO: fondo verde con ✓ blanco */
+nav a.completed .step-num {
+  background: var(--success);
+  color: #fff;
+}
+
+/* ========== 4. MAIN ==========
+   Contenedor principal del contenido de cada página.
+   - flex: 1 → ocupa todo el espacio vertical disponible entre nav y footer
+   - max-width: 1200px + margin: 0 auto → centrado con ancho máximo
+*/
+main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ========== 5. SECTIONS (Tarjetas de contenido) ==========
+   Cada <section> es una tarjeta blanca con bordes redondeados.
+   Se usan para agrupar formularios y secciones de contenido.
+   Ejemplo: "Datos de Identificación", "Educación Superior", etc.
+*/
+section {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);  /* 16px de border-radius */
+  box-shadow: var(--shadow-sm);     /* Sombra sutil */
+  padding: 2rem;
+  margin-bottom: 1.5rem;            /* Separación entre secciones */
+}
+
+/* Título de sección: azul con ícono emoji a la izquierda y línea gris abajo */
+section .section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--bg-light);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+section .section-title .icon {
+  font-size: 1.3rem;
+}
+
+/* Subtítulo de sección (usado dentro de una section para agrupar campos) */
+section .section-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-medium);
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+/* ========== 6. FORMS (Sistema de formularios) ==========
+   Sistema de grillas con CSS Grid para organizar campos de formulario.
+   
+   USO EN HTML:
+   <div class="form-grid cols-3">     ← 3 columnas
+     <div class="form-group">         ← Contenedor de un campo
+       <label>Nombre</label>          ← Etiqueta
+       <input type="text">            ← Campo
+       <span class="error-msg">...</span> ← Mensaje de error (oculto por defecto)
+     </div>
+   </div>
+   
+   VARIANTES DE COLUMNAS:
+   - form-grid        → auto-fit (columnas automáticas, mín 260px)
+   - form-grid cols-2 → 2 columnas exactas
+   - form-grid cols-3 → 3 columnas exactas
+   - form-grid cols-4 → 4 columnas exactas
+   En móvil (< 768px) todas colapsan a 1 columna.
+*/
+
+/* Grilla base: columnas automáticas que se ajustan al espacio disponible */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;           /* Espacio entre campos */
+}
+
+/* Grillas con número fijo de columnas.
+   1fr = fracción del espacio disponible (columnas iguales) */
+.form-grid.cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.form-grid.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.form-grid.cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/*
+  FORM-GROUP: Contenedor de cada campo individual.
+  Usa flexbox vertical para apilar: label → input → hint/error
+*/
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* full-width: el campo ocupa TODAS las columnas de la grilla */
+.form-group.full-width {
+  grid-column: 1 / -1;   /* Desde la columna 1 hasta la última */
+}
+
+/* span-2: el campo ocupa 2 columnas de la grilla */
+.form-group.span-2 {
+  grid-column: span 2;
+}
+
+/*
+  LABELS: Etiquetas de campo.
+  Texto gris, mayúsculas, pequeño y en negrita.
+  El asterisco rojo (*) indica campo obligatorio.
+*/
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.form-group label .required-mark {
+  color: var(--error);    /* Rojo para el asterisco * */
+  margin-left: 2px;
+}
+
+/*
+  INPUTS, SELECTS Y TEXTAREAS:
+  Estilo compartido para todos los campos de entrada.
+  - Borde gris de 1.5px
+  - Al hacer focus: borde azul + sombra azul sutil (glow)
+  - Con error (.error): borde rojo + sombra roja
+  - Deshabilitado: fondo gris, cursor no-allowed
+*/
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+  font-family: inherit;   /* Hereda la fuente del body */
+  color: var(--text-dark);
+  background: var(--bg-white);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;           /* Elimina el borde azul nativo del navegador */
+}
+
+/* Estado FOCUS: borde azul con resplandor (glow) sutil */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(42, 90, 166, 0.12); /* Anillo azul translúcido */
+}
+
+/* Estado ERROR: borde rojo con resplandor rojo (clase agregada con JS) */
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Estado DESHABILITADO: fondo gris, no interactivo */
+.form-group input:disabled,
+.form-group select:disabled {
+  background: var(--bg-light);
+  color: var(--text-light);
+  cursor: not-allowed;
+}
+
+/* Texto de ayuda debajo del campo (ej: "Se cargará con JS") */
+.form-group .hint {
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+/* Mensaje de error: oculto por defecto (display: none).
+   Se muestra con JS agregando display: block cuando hay error */
+.form-group .error-msg {
+  font-size: 0.75rem;
+  color: var(--error);
+  display: none;           /* Oculto hasta que JS lo active */
+}
+
+/* Textarea: redimensionable solo verticalmente */
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/*
+  SELECT personalizado:
+  - appearance: none → oculta la flecha nativa del navegador
+  - background-image → agrega una flecha SVG personalizada (inline, NO requiere internet)
+    La flecha es un SVG codificado en formato data:image/svg+xml
+  - padding-right extra → deja espacio para la flecha
+*/
+.form-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%234a4a5a' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  padding-right: 2.5rem;
+}
+
+/*
+  RADIO BUTTONS Y CHECKBOXES:
+  Grupos horizontales con flex-wrap para que se ajusten si no caben.
+  - accent-color: var(--primary) → colorea el radio/checkbox en azul (CSS nativo)
+*/
+.radio-group,
+.checkbox-group {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-top: 0.3rem;
+}
+
+/* Los labels dentro de radio/checkbox se sobreescriben para ser normales
+   (no uppercase como los labels de form-group) */
+.radio-group label,
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+  font-weight: 400;
+  text-transform: none;
+  color: var(--text-dark);
+  cursor: pointer;
+}
+
+.radio-group input[type="radio"],
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary); /* Color azul para el radio/checkbox */
+  cursor: pointer;
+}
+
+/* ========== 7. BUTTONS (Sistema de botones) ==========
+   Botón base (.btn) + variantes de color:
+   - .btn-primary   → Azul (acciones principales: "Siguiente", "Guardar")
+   - .btn-secondary → Borde azul, fondo transparente ("Anterior", "Cancelar")
+   - .btn-accent    → Dorado (agregar registros: "➕ Agregar Estudio")
+   - .btn-success   → Verde ("Finalizar y Enviar")
+   - .btn-danger    → Rojo (eliminar registros)
+   
+   Modificadores de tamaño:
+   - .btn-sm        → Botón pequeño (para tablas)
+   - .btn-icon      → Botón cuadrado solo con ícono
+*/
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.6rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;    /* Para cuando .btn se usa en un <a> */
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-light);
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+/* Botón con borde, sin fondo. Al hacer hover se llena de azul */
+.btn-secondary {
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+}
+
+.btn-secondary:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-accent {
+  background: var(--accent);
+  color: var(--primary-dark);
+}
+
+.btn-accent:hover {
+  background: var(--accent-light);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-success {
+  background: var(--success);
+  color: #fff;
+}
+
+.btn-success:hover {
+  opacity: 0.9;
+}
+
+.btn-danger {
+  background: var(--error);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  opacity: 0.9;
+}
+
+/* Tamaño pequeño para botones dentro de tablas */
+.btn-sm {
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+}
+
+/* Botón cuadrado para íconos */
+.btn-icon {
+  padding: 0.5rem;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+/*
+  BARRA DE ACCIONES DEL FORMULARIO:
+  Va al final de cada formulario. Contiene:
+  - Izquierda: botón "Previsualizar"
+  - Derecha: grupo de botones "← Anterior" + "Siguiente →"
+*/
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  border-top: 2px solid var(--bg-light); /* Línea separadora */
+}
+
+.form-actions .btn-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ========== 8. DYNAMIC RECORDS TABLE (Tablas dinámicas) ==========
+   Tablas usadas para mostrar registros agregados dinámicamente con JS:
+   - Estudios superiores (formacion-academica.html)
+   - Idiomas (formacion-academica.html)
+   - Experiencias laborales (experiencia-laboral.html)
+   - Detalle de experiencia (tiempo-experiencia.html)
+   - Hojas de vida (admin.html)
+   
+   Estructura HTML:
+   <div class="records-container">
+     <table class="records-table">
+       <thead>...</thead>     ← Encabezado azul
+       <tbody>...</tbody>     ← Filas de datos (se agregan con JS)
+     </table>
+     <div class="records-empty">No hay registros</div> ← Mensaje vacío
+   </div>
+*/
+.records-container {
+  margin-top: 1.5rem;
+}
+
+.records-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.records-header h4 {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+/* Tabla: ancho completo, bordes colapsados (sin espacio entre celdas) */
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+/* Encabezado de tabla: fondo azul, texto blanco, uppercase */
+.records-table thead {
+  background: var(--primary);
+  color: #fff;
+}
+
+.records-table th {
+  padding: 0.7rem 0.85rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Bordes redondeados en las esquinas superiores del encabezado */
+.records-table th:first-child {
+  border-radius: var(--radius-sm) 0 0 0;
+}
+
+.records-table th:last-child {
+  border-radius: 0 var(--radius-sm) 0 0;
+}
+
+/* Celdas de datos: separadas por línea gris inferior */
+.records-table td {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+/* Hover en filas: fondo gris claro para feedback visual */
+.records-table tbody tr:hover {
+  background: var(--bg-light);
+}
+
+/* Celda de acciones: botones "Editar" y "Eliminar" en fila */
+.records-table .actions-cell {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* Mensaje que se muestra cuando la tabla está vacía */
+.records-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  background: var(--bg-light);
+  border-radius: var(--radius-md);
+  margin-top: 0.5rem;
+}
+
+/* ========== 9. PREVIEW CARD (Panel de previsualización) ==========
+   Panel con borde punteado (dashed) que muestra un resumen de los
+   datos llenados. Oculto por defecto (display: none).
+   Se muestra al hacer clic en "👁️ Previsualizar" agregando la clase .visible.
+*/
+.preview-panel {
+  background: var(--bg-light);
+  border: 2px dashed var(--border);  /* Borde punteado gris */
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  display: none;                     /* Oculto por defecto */
+}
+
+/* Clase que JS agrega para mostrar el panel */
+.preview-panel.visible {
+  display: block;
+}
+
+.preview-panel h3 {
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Grilla de previsualización: etiqueta arriba, valor abajo */
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+/* Cada ítem de previsualización: label pequeño + valor */
+.preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.preview-item .preview-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-light);
+  letter-spacing: 0.3px;
+}
+
+.preview-item .preview-value {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+/* ========== 10. STATUS BADGES (Etiquetas de estado) ==========
+   Etiquetas tipo "pill" (redondeadas) para mostrar estados:
+   - badge-success → verde (✅ Aceptada)
+   - badge-warning → amarillo (⏳ Diligenciada)
+   - badge-error   → rojo (❌ Rechazada)
+   - badge-info    → azul (informativo)
+   
+   Uso: <span class="badge badge-warning">⏳ Diligenciada</span>
+*/
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;       /* Forma de "pill" (muy redondeado) */
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge-success {
+  background: var(--success-bg);  /* Verde claro */
+  color: var(--success);          /* Texto verde */
+}
+
+.badge-warning {
+  background: var(--warning-bg);  /* Amarillo claro */
+  color: var(--warning);          /* Texto amarillo */
+}
+
+.badge-error {
+  background: var(--error-bg);    /* Rojo claro */
+  color: var(--error);            /* Texto rojo */
+}
+
+.badge-info {
+  background: #eff6ff;            /* Azul claro */
+  color: #2563eb;                 /* Texto azul */
+}
+
+/* ========== 11. LOGIN PAGE (Página de inicio de sesión - index.html) ==========
+   Diseño centrado con una tarjeta blanca sobre un fondo con gradiente azul.
+   
+   Estructura:
+   .login-wrapper  → Fondo azul con gradiente, centra la tarjeta
+     .login-card   → Tarjeta blanca con formulario
+       .login-logo → Cuadro con "HV" (logo de la app)
+       .role-selector → Selector de rol (Usuario / Administrador)
+       form         → Campos de usuario y contraseña
+*/
+
+/* Wrapper: fondo con gradiente que ocupa todo el espacio disponible */
+.login-wrapper {
+  display: flex;
+  align-items: center;     /* Centra verticalmente */
+  justify-content: center; /* Centra horizontalmente */
+  flex: 1;                 /* Ocupa todo el espacio entre header y footer */
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+}
+
+/* Tarjeta del login: máximo 420px de ancho */
+.login-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-card .login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-card .login-header h2 {
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin-bottom: 0.4rem;
+}
+
+.login-card .login-header p {
+  color: var(--text-light);
+  font-size: 0.88rem;
+}
+
+/* Logo "HV": cuadrado con gradiente azul-dorado */
+.login-card .login-logo {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;    /* Centrado horizontalmente */
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* En el login, los form-group tienen más margen inferior */
+.login-card .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.login-card .form-group label {
+  font-size: 0.85rem;
+}
+
+/* El botón de login ocupa todo el ancho */
+.login-card .btn {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+/*
+  SELECTOR DE ROL:
+  Dos opciones en fila: "Usuario" y "Administrador".
+  Cada opción es un label que contiene un radio button oculto.
+  Al seleccionar, se agrega la clase .selected con JS.
+*/
+.role-selector {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Cada opción de rol: tarjeta con borde que cambia al seleccionar */
+.role-option {
+  flex: 1;                 /* Cada opción ocupa el mismo espacio */
+  text-align: center;
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.role-option:hover {
+  border-color: var(--primary-light);
+  background: var(--bg-light);
+}
+
+/* Opción seleccionada: borde azul con fondo azul sutil */
+.role-option.selected {
+  border-color: var(--primary);
+  background: rgba(42, 90, 166, 0.05);
+}
+
+/* El radio button real se oculta (la tarjeta entera actúa como control) */
+.role-option input[type="radio"] {
+  display: none;
+}
+
+.role-option .role-icon { font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.role-option .role-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* ========== 12. ADMIN PANEL (Panel de administración - admin.html) ==========
+   Estilos exclusivos para la vista del administrador:
+   - Toolbar con filtros tipo "pill" (Todas, Diligenciadas, Aceptadas, Rechazadas)
+   - Cards para mostrar cada hoja de vida
+*/
+
+/* Barra de herramientas: filtros a la izquierda, contador a la derecha */
+.admin-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;         /* Se ajusta en pantallas pequeñas */
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-toolbar .filters {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/*
+  FILTER-BTN: Botones de filtro tipo "pill" (muy redondeados).
+  - Por defecto: borde gris, fondo blanco
+  - .active: fondo azul, texto blanco (filtro seleccionado)
+*/
+.filter-btn {
+  padding: 0.45rem 1.1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 50px;    /* Forma de pill */
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: var(--bg-white);
+  color: var(--text-medium);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.filter-btn:hover {
+  border-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.filter-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* Card del admin: tarjeta con borde que muestra info de una hoja de vida */
+.admin-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: box-shadow var(--transition);
+}
+
+.admin-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.admin-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.admin-card .card-header h4 {
+  font-size: 1rem;
+  color: var(--text-dark);
+}
+
+/* Cuerpo de la card: grilla auto para mostrar datos */
+.admin-card .card-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-medium);
+}
+
+/* Acciones de la card: botones "Ver" y "Cambiar Estado" */
+.admin-card .card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--bg-light);
+}
+
+/* ========== 13. FOOTER (Pie de página) ==========
+   Barra inferior presente en todas las páginas.
+   - margin-top: auto empuja el footer al fondo cuando el contenido es corto
+     (funciona gracias al body con min-height: 100vh y display: flex)
+*/
+footer {
+  background: var(--primary-dark);  /* Azul oscuro, igual al header */
+  color: rgba(255, 255, 255, 0.7); /* Texto blanco semitransparente */
+  padding: 1.25rem 2rem;
+  text-align: center;
+  font-size: 0.8rem;
+  margin-top: auto;  /* Empuja al fondo (sticky footer con flexbox) */
+}
+
+/* El nombre del autor dentro de <strong> se resalta con el color acento */
+footer strong {
+  color: var(--accent);
+}
+
+/* ========== 14. UTILITIES (Clases utilitarias reutilizables) ==========
+   Clases pequeñas de un solo propósito. Se pueden combinar con cualquier elemento.
+   Ejemplo: <div class="form-grid cols-2 mt-2"> usa .mt-2 para agregar margen superior.
+*/
+
+/* — Alineación de texto — */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* — Márgenes (mt = margin-top, mb = margin-bottom) — */
+.mt-1 { margin-top: 0.5rem; }   /* Margen superior pequeño */
+.mt-2 { margin-top: 1rem; }     /* Margen superior mediano */
+.mt-3 { margin-top: 1.5rem; }   /* Margen superior grande */
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+
+/* — Visibilidad (toggle con JavaScript) — */
+.hidden { display: none; }    /* Ocultar elemento */
+.visible { display: block; }  /* Mostrar elemento */
+
+/* Línea divisora horizontal para separar secciones */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+/*
+  ALERTAS: Cajas de mensaje con icono + texto.
+  Se usa con una variante de color: .alert-info, .alert-warning, etc.
+  Ejemplo: <div class="alert alert-info">ℹ️ Información importante</div>
+*/
+.alert {
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+  display: flex;            /* Icono y texto en línea */
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Variante azul: información general */
+.alert-info {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+/* Variante amarilla: advertencias */
+.alert-warning {
+  background: var(--warning-bg);
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+/* Variante verde: éxito / confirmación */
+.alert-success {
+  background: var(--success-bg);
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+/* Variante roja: errores */
+.alert-error {
+  background: var(--error-bg);
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* ========== 15. PROGRESS BAR (Barra de progreso) ==========
+   Indicador visual alternativo al stepper del nav.
+   Cada paso es una línea coloreada según su estado.
+*/
+.progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0;
+}
+
+/* Cada paso es una línea flexible de 4px de alto */
+.progress-step {
+  flex: 1;              /* Todos los pasos ocupan el mismo ancho */
+  height: 4px;
+  background: var(--border);  /* Gris por defecto (no completado) */
+  border-radius: 2px;
+  position: relative;
+}
+
+/* Paso completado: verde */
+.progress-step.completed {
+  background: var(--success);
+}
+
+/* Paso actual: naranja/acento */
+.progress-step.current {
+  background: var(--accent);
+}
+
+/* ========== 16. RESPONSIVE (Adaptación a pantallas pequeñas) ==========
+   Media queries que ajustan el diseño para tablets y móviles.
+   Estrategia "desktop-first": los estilos base son para pantalla grande
+   y aquí se sobreescriben para pantallas más pequeñas.
+*/
+
+/*
+  TABLET / PANTALLA MEDIANA (≤ 768px)
+  - Header y nav se compactan
+  - Todas las grillas de formulario pasan a 1 columna
+  - Botones se apilan verticalmente
+  - La tabla se vuelve scrolleable horizontalmente
+*/
+@media (max-width: 768px) {
+  /* Header más compacto */
+  header {
+    padding: 0.85rem 1rem;
+  }
+
+  header h1 {
+    font-size: 1.1rem;
+  }
+
+  /* Nav con menos padding */
+  nav {
+    padding: 0 0.5rem;
+  }
+
+  nav a {
+    padding: 0.7rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  /* Contenido principal con menos margen */
+  main {
+    padding: 1rem;
+  }
+
+  section {
+    padding: 1.25rem;
+  }
+
+  /*
+    GRILLAS → 1 COLUMNA: En móvil todas las grillas colapsan
+    a una sola columna para que los campos no queden apretados.
+  */
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid.cols-2,
+  .form-grid.cols-3,
+  .form-grid.cols-4 {
+    grid-template-columns: 1fr;  /* Anula las 2, 3 o 4 columnas */
+  }
+
+  /* Los campos que ocupaban 2 columnas ahora ocupan 1 */
+  .form-group.span-2 {
+    grid-column: span 1;
+  }
+
+  /* Botones se apilan verticalmente */
+  .form-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .form-actions .btn-group {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;  /* Botones de ancho completo */
+  }
+
+  /* Admin toolbar: filtros se apilan */
+  .admin-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Tabla con scroll horizontal para no romper el layout */
+  .records-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  /* Selector de rol se apila (login) */
+  .role-selector {
+    flex-direction: column;
+  }
+}
+
+/*
+  MÓVIL PEQUEÑO (≤ 480px)
+  - Se oculta el texto de los pasos del nav, solo queda el número
+  - Útil para que el stepper quepa en pantallas muy estrechas
+*/
+@media (max-width: 480px) {
+  nav .nav-inner {
+    gap: 0;  /* Elimina espacio entre pasos */
+  }
+
+  /* Oculta el texto del paso, solo deja visible .step-num */
+  nav a span:not(.step-num) {
+    display: none;
+  }
+
+  /* Números de paso más pequeños */
+  nav a .step-num {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+}

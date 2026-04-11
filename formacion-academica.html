@@ -1,0 +1,459 @@
+<!--
+  ============================================================
+  FORMACION-ACADEMICA.HTML — Paso 2 del Wizard: Formación Académica
+  ============================================================
+  PROPÓSITO:
+  Formulario para capturar la formación educativa del usuario:
+  educación básica/media, educación superior (dinámica) e idiomas (dinámico).
+
+  ESTRUCTURA:
+  ┌─ <header>        → Barra superior (nombre app + avatar)
+  ├─ <nav>           → Stepper: paso 1 ✓ completado, paso 2 activo, 3-5 disabled
+  ├─ <main>
+  │   ├─ .progress-bar     → Barra de progreso (paso 2 resaltado)
+  │   ├─ Sección: Educación Básica y Media (select + inputs)
+  │   ├─ Sección: Educación Superior (DINÁMICA con tabla)
+  │   │   ├─ Formulario para agregar un estudio
+  │   │   └─ Tabla #tablaEstudios (filas se agregan con JS)
+  │   ├─ Sección: Idiomas (DINÁMICA con tabla)
+  │   │   ├─ Formulario para agregar un idioma
+  │   │   └─ Tabla #tablaIdiomas (filas se agregan con JS)
+  │   ├─ Panel de Previsualización
+  │   └─ Botones: Previsualizar, ← Anterior, Siguiente →
+  └─ <footer>
+
+  CONCEPTO "FORMULARIO DINÁMICO":
+  Las secciones de Educación Superior e Idiomas permiten agregar
+  múltiples registros. El usuario llena los campos, hace clic en
+  "➕ Agregar", y JavaScript debe:
+  1. Leer los valores del mini-formulario
+  2. Crear una nueva fila <tr> en la tabla correspondiente
+  3. Insertar los datos en las celdas <td>
+  4. Agregar un botón "Eliminar" para poder borrar la fila
+  5. Limpiar los campos del mini-formulario para el siguiente registro
+
+  NAVEGACIÓN:
+  - ← Anterior: datos-personales.html (paso 1)
+  - Siguiente →: experiencia-laboral.html (paso 3)
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoja de Vida - Formación Académica</title>
+  <!-- Hoja de estilos compartida -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER: Barra superior con nombre de la app y avatar del usuario -->
+  <header>
+    <div class="header-inner">
+      <a href="index.html"><h1>Hoja de <span>Vida</span></h1></a>
+      <div class="header-user">
+        <span>Usuario</span>
+        <div class="avatar">U</div>
+      </div>
+    </div>
+  </header>
+
+  <!--
+    NAV (STEPPER): Paso 1 marcado como .completed (check ✓),
+    Paso 2 marcado como .active, Pasos 3-5 como .disabled.
+  -->
+  <nav>
+    <div class="nav-inner">
+      <a href="datos-personales.html" class="completed">
+        <span class="step-num">✓</span>
+        <span>Datos Personales</span>
+      </a>
+      <a href="formacion-academica.html" class="active">
+        <span class="step-num">2</span>
+        <span>Formación Académica</span>
+      </a>
+      <a href="experiencia-laboral.html" class="disabled">
+        <span class="step-num">3</span>
+        <span>Experiencia Laboral</span>
+      </a>
+      <a href="tiempo-experiencia.html" class="disabled">
+        <span class="step-num">4</span>
+        <span>Tiempo Experiencia</span>
+      </a>
+      <a href="certificacion.html" class="disabled">
+        <span class="step-num">5</span>
+        <span>Certificación</span>
+      </a>
+      <a href="index.html">
+        <span class="step-num">🚪</span>
+        <span>Cerrar Sesión</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN: Contenido principal -->
+  <main>
+    <!-- Barra de progreso: paso 1 completado (verde), paso 2 actual (naranja), 3-5 pendientes -->
+    <div class="progress-bar">
+      <div class="progress-step completed"></div>
+      <div class="progress-step current"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+    </div>
+
+    <form id="formFormacion">
+
+      <!--
+        SECCIÓN 1: EDUCACIÓN BÁSICA Y MEDIA
+        =====================================
+        Captura el último grado aprobado (primaria o bachillerato),
+        el título obtenido y la fecha de grado.
+        - <select> con opciones de 1° Primaria hasta 11° Bachillerato
+        - type="date" con rango min/max para validación
+      -->
+      <!-- Sección: Educación Básica y Media -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">🎓</span> Educación Básica y Media
+        </h2>
+        <div class="form-grid cols-3">
+          <div class="form-group">
+            <label for="educacionBasica">Ultimo grado aprobado <span class="required-mark">*</span></label>
+            <select id="educacionBasica" name="educacionBasica">
+              <option value="">-- Seleccione --</option>
+              <option value="1">1° Primaria</option>
+              <option value="2">2° Primaria</option>
+              <option value="3">3° Primaria</option>
+              <option value="4">4° Primaria</option>
+              <option value="5">5° Primaria</option>
+              <option value="6">6° Bachillerato</option>
+              <option value="7">7° Bachillerato</option>
+              <option value="8">8° Bachillerato</option>
+              <option value="9">9° Bachillerato</option>
+              <option value="10">10° Bachillerato</option>
+              <option value="11">11° Bachillerato</option>
+            </select>
+            <span class="error-msg">Seleccione el nivel de educación</span>
+          </div>
+          <div class="form-group">
+            <label for="tituloBasica">Título Obtenido</label>
+            <input type="text" id="tituloBasica" name="tituloBasica"
+                   placeholder="Ej: Bachiller Académico" maxlength="80">
+          </div>
+          <div class="form-group">
+            <label for="fechaGradoBasica">Fecha de Grado</label>
+            <input type="date" id="fechaGradoBasica" name="fechaGradoBasica"
+                   min="1960-01-01" max="2026-12-31">
+          </div>
+        </div>
+      </section>
+
+      <!--
+        SECCIÓN 2: EDUCACIÓN SUPERIOR (DINÁMICA)
+        ==========================================
+        Permite agregar MÚLTIPLES estudios de educación superior.
+        
+        PATRÓN "FORMULARIO → TABLA DINÁMICA":
+        1. El usuario llena los campos del mini-formulario (#formNuevoEstudio)
+        2. Hace clic en "➕ Agregar Estudio" (#btnAgregarEstudio)
+        3. JavaScript crea una nueva fila <tr> en #tablaEstudios
+        4. Mientras no hay registros, se muestra #emptyEstudios (mensaje vacío)
+        
+        CAMPOS DEL MINI-FORMULARIO:
+        - Modalidad: Técnico, Tecnólogo, Profesional, Especialización, Maestría, Doctorado
+        - Semestres aprobados (input number, 1-20)
+        - ¿Se graduó? (Sí/No)
+        - Institución: <select> con universidades + opción "Otra"
+          → Si elige "Otra", aparece un <input> de texto (#otraInstitucion)
+            que está oculto por defecto (style="display: none")
+        - Título obtenido, fecha de terminación, tarjeta profesional
+
+        TABLA DE RESULTADOS:
+        - #tablaEstudios: tabla con columnas #, Modalidad, Institución, Título,
+          Semestres, Graduado, Acciones
+        - La columna Acciones tendría un botón "Eliminar" por fila
+        - <div class="records-empty"> se muestra cuando no hay registros
+      -->
+      <!-- Sección: Educación Superior (dinámica) -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">🏛️</span> Educación Superior
+        </h2>
+
+        <div class="alert alert-info">
+          ℹ️ Agregue todos los estudios de educación superior realizados. Puede añadir la cantidad que necesite.
+        </div>
+
+        <!-- Formulario para agregar nuevo estudio -->
+        <div id="formNuevoEstudio">
+          <h3 class="section-subtitle">Agregar Estudio</h3>
+          <div class="form-grid cols-3">
+            <div class="form-group">
+              <label for="modalidadAcademica">Modalidad Académica <span class="required-mark">*</span></label>
+              <select id="modalidadAcademica" name="modalidadAcademica">
+                <option value="">-- Seleccione --</option>
+                <option value="tecnico">Técnico</option>
+                <option value="tecnologo">Tecnólogo</option>
+                <option value="tecnologo_especializado">Tecnólogo Especializado</option>
+                <option value="profesional">Profesional / Universitario</option>
+                <option value="especializacion">Especialización</option>
+                <option value="maestria">Maestría</option>
+                <option value="doctorado">Doctorado</option>
+              </select>
+              <span class="error-msg">Seleccione la modalidad</span>
+            </div>
+            <div class="form-group">
+              <label for="semestresAprobados">N° Semestres Aprobados <span class="required-mark">*</span></label>
+              <input type="number" id="semestresAprobados" name="semestresAprobados"
+                     placeholder="Ej: 10" min="1" max="20" inputmode="numeric">
+              <span class="error-msg">Ingrese los semestres aprobados</span>
+            </div>
+            <div class="form-group">
+              <label for="graduado">¿Se Graduó? <span class="required-mark">*</span></label>
+              <select id="graduado" name="graduado">
+                <option value="">-- Seleccione --</option>
+                <option value="si">Sí</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid cols-2 mt-2">
+            <div class="form-group">
+              <label for="institucionEducativa">Nombre de la Institución <span class="required-mark">*</span></label>
+              <select>
+                <option value="">-- Seleccione --</option>
+                <option value="universidad_nacional">Universidad Nacional</option>
+                <option value="universidad_de_america">Universidad de América</option>
+                <option value="universidad_simon_bolivar">Universidad Simón Bolívar</option>
+                <option value="universidad_javeriana">Universidad Javeriana</option>
+                <option value="universidad_externado">Universidad Externado</option>
+                <option value="universidad_san_buenaventura">Universidad San Buenaventura</option>
+                <option value="otra">Otra</option>
+              </select>
+              <span class="error-msg">Seleccione la institución educativa</span>
+              <!-- Si se selecciona "Otra", se muestra este campo de texto -->
+              <input type="text" id="otraInstitucion" name="otraInstitucion"
+                     placeholder="Ingrese el nombre de la institución" maxlength="120" style="display: none;">  
+              <span class="error-msg">Ingrese la institución educativa</span>
+            </div>
+            <div class="form-group">
+              <label for="tituloObtenido">Título Obtenido <span class="required-mark">*</span></label>
+              <input type="text" id="tituloObtenido" name="tituloObtenido"
+                     placeholder="Ej: Ingeniero de Sistemas" maxlength="120">
+              <span class="error-msg">Ingrese el título obtenido</span>
+            </div>
+          </div>
+
+          <div class="form-grid cols-3 mt-2">
+            <div class="form-group">
+              <label for="fechaTerminacion">Fecha de Terminación</label>
+              <input type="date" id="fechaTerminacion" name="fechaTerminacion"
+                     min="1960-01-01" max="2026-12-31">
+            </div>
+            <div class="form-group">
+              <label for="tarjetaProfesional">N° Tarjeta Profesional</label>
+              <input type="text" id="tarjetaProfesional" name="tarjetaProfesional"
+                     placeholder="Si aplica" maxlength="30">
+            </div>
+            <div class="form-group" style="display: flex; align-items: flex-end;">
+              <button type="button" class="btn btn-accent btn-sm" id="btnAgregarEstudio">
+                ➕ Agregar Estudio
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de estudios agregados -->
+        <div class="records-container">
+          <div class="records-header">
+            <h4>Estudios Registrados</h4>
+          </div>
+          <table class="records-table" id="tablaEstudios">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Modalidad</th>
+                <th>Institución</th>
+                <th>Título</th>
+                <th>Semestres</th>
+                <th>Graduado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Los registros se agregarán dinámicamente con JS -->
+            </tbody>
+          </table>
+          <div class="records-empty" id="emptyEstudios">
+            No se han agregado estudios aún. Use el formulario de arriba para agregar.
+          </div>
+        </div>
+      </section>
+
+      <!--
+        SECCIÓN 3: IDIOMAS (DINÁMICA)
+        ===============================
+        Mismo patrón que Educación Superior: mini-formulario + tabla.
+        
+        Para cada idioma se captura:
+        - Nombre del idioma (select con 10 opciones)
+        - Nivel de Habla, Lectura y Escritura (Muy Bien / Bien / Regular)
+        
+        El botón #btnAgregarIdioma agrega filas a #tablaIdiomas.
+        #emptyIdiomas se muestra cuando la tabla está vacía.
+      -->
+      <!-- Sección: Idiomas (dinámica) -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">🌐</span> Idiomas
+        </h2>
+
+        <div class="alert alert-info">
+          ℹ️ Agregue los idiomas que domina con su nivel de competencia.
+        </div>
+
+        <!-- Formulario para agregar idioma -->
+        <div id="formNuevoIdioma">
+          <div class="form-grid cols-4">
+            <div class="form-group">
+              <label for="idioma">Idioma <span class="required-mark">*</span></label>
+              <select id="idioma" name="idioma">
+                <option value="">-- Seleccione --</option>
+                <option value="ingles">Inglés</option>
+                <option value="frances">Francés</option>
+                <option value="aleman">Alemán</option>
+                <option value="portugues">Portugués</option>
+                <option value="italiano">Italiano</option>
+                <option value="mandarin">Mandarín</option>
+                <option value="japones">Japonés</option>
+                <option value="coreano">Coreano</option>
+                <option value="arabe">Árabe</option>
+                <option value="otro">Otro</option>
+              </select>
+              <span class="error-msg">Seleccione un idioma</span>
+            </div>
+            <div class="form-group">
+              <label for="nivelHabla">Habla <span class="required-mark">*</span></label>
+              <select id="nivelHabla" name="nivelHabla">
+                <option value="">-- Seleccione --</option>
+                <option value="muy_bien">Muy Bien</option>
+                <option value="bien">Bien</option>
+                <option value="regular">Regular</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="nivelLectura">Lee <span class="required-mark">*</span></label>
+              <select id="nivelLectura" name="nivelLectura">
+                <option value="">-- Seleccione --</option>
+                <option value="muy_bien">Muy Bien</option>
+                <option value="bien">Bien</option>
+                <option value="regular">Regular</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="nivelEscritura">Escribe <span class="required-mark">*</span></label>
+              <select id="nivelEscritura" name="nivelEscritura">
+                <option value="">-- Seleccione --</option>
+                <option value="muy_bien">Muy Bien</option>
+                <option value="bien">Bien</option>
+                <option value="regular">Regular</option>
+              </select>
+            </div>
+          </div>
+          <div class="mt-1">
+            <button type="button" class="btn btn-accent btn-sm" id="btnAgregarIdioma">
+              ➕ Agregar Idioma
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabla de idiomas -->
+        <div class="records-container">
+          <table class="records-table" id="tablaIdiomas">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Idioma</th>
+                <th>Habla</th>
+                <th>Lee</th>
+                <th>Escribe</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Los registros se agregarán dinámicamente con JS -->
+            </tbody>
+          </table>
+          <div class="records-empty" id="emptyIdiomas">
+            No se han agregado idiomas aún.
+          </div>
+        </div>
+      </section>
+
+      <!--
+        PANEL DE PREVISUALIZACIÓN
+        Muestra resumen: nivel educación básica, título, total estudios, total idiomas.
+        Se activa con el botón "Previsualizar".
+      -->
+      <!-- Panel de previsualización -->
+      <div class="preview-panel" id="previewFormacion">
+        <h3>👁️ Previsualización de Formación Académica</h3>
+        <div class="preview-grid">
+          <div class="preview-item">
+            <span class="preview-label">Nivel de Educación Básica</span>
+            <span class="preview-value" id="prevEducBasica">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Título Básica/Media</span>
+            <span class="preview-value" id="prevTituloBasica">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Total Estudios Superiores</span>
+            <span class="preview-value" id="prevTotalEstudios">0</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Total Idiomas</span>
+            <span class="preview-value" id="prevTotalIdiomas">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!--
+        ACCIONES: Previsualizar, ← Anterior (paso 1), Siguiente → (paso 3)
+        Se usan <a> para la navegación entre pasos.
+      -->
+      <!-- Acciones del formulario -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="btnPreview">
+          👁️ Previsualizar
+        </button>
+        <div class="btn-group">
+          <a href="datos-personales.html" class="btn btn-secondary">← Anterior</a>
+          <a href="experiencia-laboral.html" class="btn btn-primary">
+            Siguiente: Experiencia Laboral →
+          </a>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Facultad de Ingeniería &mdash; <strong>Desarrollo Web</strong> &mdash; Parcial II &mdash; 2026</p>
+  </footer>
+
+  <!--
+    SCRIPT: Archivo JS para manejar la lógica dinámica de esta página.
+    Aún no creado. Aquí iría:
+    - Agregar/eliminar filas de la tabla de estudios
+    - Agregar/eliminar filas de la tabla de idiomas
+    - Mostrar/ocultar campo "Otra Institución"
+    - Llenar el panel de previsualización
+  -->
+  <!-- <script src="js/formacion-academica.js"></script> -->
+</body>
+</html>

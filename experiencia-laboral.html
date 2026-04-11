@@ -1,0 +1,344 @@
+<!--
+  ============================================================
+  EXPERIENCIA-LABORAL.HTML — Paso 3 del Wizard: Experiencia Laboral
+  ============================================================
+  PROPÓSITO:
+  Formulario dinámico para registrar la experiencia laboral del usuario.
+  Misma lógica que Educación Superior: mini-formulario → agregar fila a tabla.
+
+  ESTRUCTURA:
+  ┌─ <header> + <nav> (pasos 1-2 completados ✓, paso 3 activo)
+  ├─ <main>
+  │   ├─ .progress-bar (3 de 5 resaltados)
+  │   ├─ Sección: Experiencia Laboral
+  │   │   ├─ Mini-formulario (#formNuevaExperiencia):
+  │   │   │   · Empresa, Tipo (Pública/Privada), País, Depto, Municipio
+  │   │   │   · Correo/Teléfono/Dirección de la entidad
+  │   │   │   · Fecha ingreso, fecha retiro, cargo, dependencia
+  │   │   └─ Tabla #tablaExperiencias (filas dinámicas con JS)
+  │   ├─ Panel de Previsualización (total exp, sector público, privado)
+  │   └─ Botones: ← Anterior (paso 2), Siguiente → (paso 4)
+  └─ <footer>
+
+  NAVEGACIÓN:
+  - ← Anterior: formacion-academica.html (paso 2)
+  - Siguiente →: tiempo-experiencia.html (paso 4)
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoja de Vida - Experiencia Laboral</title>
+  <!-- Hoja de estilos compartida -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER: Barra superior con nombre de la app y avatar -->
+  <header>
+    <div class="header-inner">
+      <a href="index.html"><h1>Hoja de <span>Vida</span></h1></a>
+      <div class="header-user">
+        <span>Usuario</span>
+        <div class="avatar">U</div>
+      </div>
+    </div>
+  </header>
+
+  <!--
+    NAV (STEPPER): Pasos 1-2 completados (✓), paso 3 activo, 4-5 disabled
+  -->
+  <nav>
+    <div class="nav-inner">
+      <a href="datos-personales.html" class="completed">
+        <span class="step-num">✓</span>
+        <span>Datos Personales</span>
+      </a>
+      <a href="formacion-academica.html" class="completed">
+        <span class="step-num">✓</span>
+        <span>Formación Académica</span>
+      </a>
+      <a href="experiencia-laboral.html" class="active">
+        <span class="step-num">3</span>
+        <span>Experiencia Laboral</span>
+      </a>
+      <a href="tiempo-experiencia.html" class="disabled">
+        <span class="step-num">4</span>
+        <span>Tiempo Experiencia</span>
+      </a>
+      <a href="certificacion.html" class="disabled">
+        <span class="step-num">5</span>
+        <span>Certificación</span>
+      </a>
+      <a href="index.html">
+        <span class="step-num">🚪</span>
+        <span>Cerrar Sesión</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+    <!-- Barra de progreso: pasos 1-2 completados, paso 3 actual -->
+    <div class="progress-bar">
+      <div class="progress-step completed"></div>
+      <div class="progress-step completed"></div>
+      <div class="progress-step current"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+    </div>
+
+    <form id="formExperiencia">
+
+      <!--
+        SECCIÓN: EXPERIENCIA LABORAL (DINÁMICA)
+        ==========================================
+        Patrón: mini-formulario → botón agregar → tabla dinámica.
+
+        CAMPOS DEL MINI-FORMULARIO:
+        - Empresa o Entidad (texto libre, max 120 caracteres)
+        - Tipo de Empresa: Pública o Privada (afecta el cálculo de tiempo)
+        - Ubicación: País, Departamento (33 de Colombia), Municipio
+        - Datos de contacto de la entidad: correo, teléfono, dirección
+        - Fecha de ingreso (obligatoria) y fecha de retiro (vacío = actual)
+        - Cargo desempeñado (obligatorio) y Dependencia (opcional)
+
+        TABLA #tablaExperiencias:
+        Columnas: #, Empresa, Tipo, Cargo, Fecha Ingreso, Fecha Retiro, Acciones
+        Las filas se agregan dinámicamente con #btnAgregarExperiencia.
+      -->
+      <!-- Sección: Agregar Experiencia Laboral -->
+      <section>
+        <h2 class="section-title">
+          <span class="icon">💼</span> Experiencia Laboral
+        </h2>
+
+        <div class="alert alert-info">
+          ℹ️ Registre su experiencia laboral comenzando por la más reciente. Puede agregar todas las experiencias que necesite.
+        </div>
+
+        <!-- Formulario para agregar nueva experiencia -->
+        <div id="formNuevaExperiencia">
+          <h3 class="section-subtitle">Agregar Experiencia</h3>
+
+          <div class="form-grid cols-2">
+            <div class="form-group">
+              <label for="empresaEntidad">Empresa o Entidad <span class="required-mark">*</span></label>
+              <input type="text" id="empresaEntidad" name="empresaEntidad"
+                     placeholder="Ej: Ministerio de Educación" maxlength="120">
+              <span class="error-msg">Ingrese el nombre de la empresa o entidad</span>
+            </div>
+            <div class="form-group">
+              <label for="tipoEmpresa">Tipo de Empresa <span class="required-mark">*</span></label>
+              <select id="tipoEmpresa" name="tipoEmpresa">
+                <option value="">-- Seleccione --</option>
+                <option value="publica">Pública</option>
+                <option value="privada">Privada</option>
+                <option value="independiente">Independiente</option>
+              </select>
+              <span class="error-msg">Seleccione el tipo de empresa</span>
+            </div>
+          </div>
+
+          <div class="form-grid cols-3 mt-2">
+            <div class="form-group">
+              <label for="paisEmpresa">País <span class="required-mark">*</span></label>
+              <select id="paisEmpresa" name="paisEmpresa">
+                <option value="">-- Seleccione --</option>
+                <option value="colombia" selected>Colombia</option>
+                <option value="venezuela">Venezuela</option>
+                <option value="ecuador">Ecuador</option>
+                <option value="peru">Perú</option>
+                <option value="brasil">Brasil</option>
+                <option value="mexico">México</option>
+                <option value="estados_unidos">Estados Unidos</option>
+                <option value="espana">España</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="departamentoEmpresa">Departamento <span class="required-mark">*</span></label>
+              <select id="departamentoEmpresa" name="departamentoEmpresa">
+                <option value="">-- Seleccione --</option>
+                <option value="amazonas">Amazonas</option>
+                <option value="antioquia">Antioquia</option>
+                <option value="arauca">Arauca</option>
+                <option value="atlantico">Atlántico</option>
+                <option value="bolivar">Bolívar</option>
+                <option value="boyaca">Boyacá</option>
+                <option value="caldas">Caldas</option>
+                <option value="caqueta">Caquetá</option>
+                <option value="casanare">Casanare</option>
+                <option value="cauca">Cauca</option>
+                <option value="cesar">Cesar</option>
+                <option value="choco">Chocó</option>
+                <option value="cordoba">Córdoba</option>
+                <option value="cundinamarca">Cundinamarca</option>
+                <option value="guainia">Guainía</option>
+                <option value="guaviare">Guaviare</option>
+                <option value="huila">Huila</option>
+                <option value="laguajira">La Guajira</option>
+                <option value="magdalena">Magdalena</option>
+                <option value="meta">Meta</option>
+                <option value="narino">Nariño</option>
+                <option value="nortedesantander">Norte de Santander</option>
+                <option value="putumayo">Putumayo</option>
+                <option value="quindio">Quindío</option>
+                <option value="risaralda">Risaralda</option>
+                <option value="sanandres">San Andrés y Providencia</option>
+                <option value="santander">Santander</option>
+                <option value="sucre">Sucre</option>
+                <option value="tolima">Tolima</option>
+                <option value="valledelcauca">Valle del Cauca</option>
+                <option value="vaupes">Vaupés</option>
+                <option value="vichada">Vichada</option>
+                <option value="bogota">Bogotá D.C.</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="municipioEmpresa">Municipio <span class="required-mark">*</span></label>
+              <input type="text" id="municipioEmpresa" name="municipioEmpresa"
+                     placeholder="Ej: Bogotá" maxlength="60">
+            </div>
+          </div>
+
+          <div class="form-grid cols-3 mt-2">
+            <div class="form-group">
+              <label for="emailEmpresa">Correo de la Entidad</label>
+              <input type="email" id="emailEmpresa" name="emailEmpresa"
+                     placeholder="Ej: contacto@empresa.com" maxlength="80">
+            </div>
+            <div class="form-group">
+              <label for="telefonoEmpresa">Teléfono de la Entidad</label>
+              <input type="tel" id="telefonoEmpresa" name="telefonoEmpresa"
+                     placeholder="Ej: 6011234567" maxlength="15"
+                     pattern="[0-9]+" inputmode="tel" title="Solo números">
+            </div>
+            <div class="form-group">
+              <label for="direccionEmpresa">Dirección de la Entidad</label>
+              <input type="text" id="direccionEmpresa" name="direccionEmpresa"
+                     placeholder="Ej: Calle 100 #15-20" maxlength="120">
+            </div>
+          </div>
+
+          <div class="form-grid cols-3 mt-2">
+            <div class="form-group">
+              <label for="fechaIngreso">Fecha de Ingreso <span class="required-mark">*</span></label>
+              <input type="date" id="fechaIngreso" name="fechaIngreso"
+                     min="1960-01-01" max="2026-12-31">
+              <span class="error-msg">Seleccione la fecha de ingreso</span>
+            </div>
+            <div class="form-group">
+              <label for="fechaRetiro">Fecha de Retiro</label>
+              <input type="date" id="fechaRetiro" name="fechaRetiro"
+                     min="1960-01-01" max="2026-12-31">
+              <span class="hint">Deje en blanco si es el empleo actual</span>
+            </div>
+            <div class="form-group">
+              <label for="cargoExperiencia">Cargo <span class="required-mark">*</span></label>
+              <input type="text" id="cargoExperiencia" name="cargoExperiencia"
+                     placeholder="Ej: Analista de Sistemas" maxlength="80">
+              <span class="error-msg">Ingrese el cargo desempeñado</span>
+            </div>
+          </div>
+
+          <div class="form-grid cols-2 mt-2">
+            <div class="form-group">
+              <label for="dependencia">Dependencia</label>
+              <input type="text" id="dependencia" name="dependencia"
+                     placeholder="Ej: Dirección de Tecnología" maxlength="100">
+            </div>
+            <div class="form-group" style="display: flex; align-items: flex-end;">
+              <button type="button" class="btn btn-accent" id="btnAgregarExperiencia">
+                ➕ Agregar Experiencia
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de experiencias -->
+        <div class="records-container">
+          <div class="records-header">
+            <h4>Experiencias Registradas</h4>
+          </div>
+          <table class="records-table" id="tablaExperiencias">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Empresa / Entidad</th>
+                <th>Tipo</th>
+                <th>Cargo</th>
+                <th>Fecha Ingreso</th>
+                <th>Fecha Retiro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Los registros se agregarán dinámicamente con JS -->
+            </tbody>
+          </table>
+          <div class="records-empty" id="emptyExperiencias">
+            No se han agregado experiencias laborales aún. Use el formulario de arriba para agregar.
+          </div>
+        </div>
+      </section>
+
+      <!--
+        PREVISUALIZACIÓN: Resumen de experiencias registradas.
+        Muestra: total experiencias, cuántas en sector público, cuántas en privado.
+      -->
+      <!-- Panel de previsualización -->
+      <div class="preview-panel" id="previewExperiencia">
+        <h3>👁️ Previsualización de Experiencia Laboral</h3>
+        <div class="preview-grid">
+          <div class="preview-item">
+            <span class="preview-label">Total de Experiencias</span>
+            <span class="preview-value" id="prevTotalExp">0</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Sector Público</span>
+            <span class="preview-value" id="prevExpPublica">0</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Sector Privado</span>
+            <span class="preview-value" id="prevExpPrivada">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!--
+        ACCIONES: Previsualizar, ← Anterior (paso 2), Siguiente → (paso 4)
+      -->
+      <!-- Acciones del formulario -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="btnPreview">
+          👁️ Previsualizar
+        </button>
+        <div class="btn-group">
+          <a href="formacion-academica.html" class="btn btn-secondary">← Anterior</a>
+          <a href="tiempo-experiencia.html" class="btn btn-primary">
+            Siguiente: Tiempo de Experiencia →
+          </a>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Facultad de Ingeniería &mdash; <strong>Desarrollo Web</strong> &mdash; Parcial II &mdash; 2026</p>
+  </footer>
+
+  <!--
+    SCRIPT: Archivo JS para la lógica dinámica d experiencia laboral.
+    Aún no creado. Aquí iría:
+    - Agregar/eliminar filas de la tabla #tablaExperiencias
+    - Validar fechas (retiro > ingreso)
+    - Llenar panel de previsualización
+  -->
+  <!-- <script src="js/experiencia-laboral.js"></script> -->
+</body>
+</html>
