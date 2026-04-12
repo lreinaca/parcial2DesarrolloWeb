@@ -25,8 +25,8 @@
   - Siguiente →: va a formacion-academica.html (paso 2)
 
   JAVASCRIPT:
-  - js/datos-personales.js: Carga dinámicamente los <select> de país,
-    tipo de documento y sexo desde arreglos JS. También maneja la
+  - js/datos-personales.js: Carga dinámicamente los <select> de distrito militar,
+    país, departamento y municipio desde arreglos JS. También maneja la
     visibilidad condicional del campo "País de Origen" cuando se
     selecciona nacionalidad "Extranjera".
 
@@ -232,7 +232,7 @@
           </div>
           
           <div class="form-group">
-            <label>Libreta Militar</label>
+            <label>¿ Tiene Libreta Militar ?</label>
             <div class="radio-group">
               <label>
                 <input type="radio" name="tieneLibreta" value="si"> Sí
@@ -248,14 +248,15 @@
       <!--
         SECCIÓN 2: LIBRETA MILITAR (CONDICIONAL)
         ==========================================
-        Esta sección siempre es visible en el HTML, pero en una versión
-        con JS completo se podría ocultar/mostrar según el radio button
-        "tieneLibreta" (Sí/No) de la sección anterior.
+        Esta sección está oculta por defecto (clase .hidden).
+        Se muestra solo cuando el usuario selecciona "Sí" en el radio button
+        "tieneLibreta" de la sección anterior. Si elige "No", se oculta
+        y se limpian los campos. La lógica está en js/datos-personales.js.
         Campos: número de libreta, distrito militar (20 distritos de Colombia),
         clase de libreta (Primera/Segunda).
       -->
       <!-- Sección: Libreta Militar (condicional) -->
-      <section id="seccionLibretaMilitar">
+      <section id="seccionLibretaMilitar" class="hidden">
         <h2 class="section-title">
           <span class="icon">🎖️</span> Información de Libreta Militar
         </h2>
@@ -270,34 +271,12 @@
             <label for="distritoMilitar">Distrito Militar</label>
             <select id="distritoMilitar" name="distritoMilitar">
               <option value="">-- Seleccione --</option>
-              <option value="1">Distrito 1 - Bogotá</option>
-              <option value="2">Distrito 2 - Tunja</option>
-              <option value="3">Distrito 3 - Sogamoso</option>
-              <option value="4">Distrito 4 - Bucaramanga</option>
-              <option value="5">Distrito 5 - Cúcuta</option>
-              <option value="6">Distrito 6 - Medellín</option>
-              <option value="7">Distrito 7 - Manizales</option>
-              <option value="8">Distrito 8 - Pereira</option>
-              <option value="9">Distrito 9 - Neiva</option>
-              <option value="10">Distrito 10 - Ibagué</option>
-              <option value="11">Distrito 11 - Cali</option>
-              <option value="12">Distrito 12 - Popayán</option>
-              <option value="13">Distrito 13 - Pasto</option>
-              <option value="14">Distrito 14 - Barranquilla</option>
-              <option value="15">Distrito 15 - Cartagena</option>
-              <option value="16">Distrito 16 - Santa Marta</option>
-              <option value="17">Distrito 17 - Montería</option>
-              <option value="18">Distrito 18 - Villavicencio</option>
-              <option value="19">Distrito 19 - Florencia</option>
-              <option value="20">Distrito 20 - Quibdó</option>
             </select>
           </div>
           <div class="form-group">
             <label for="claseLibreta">Clase de Libreta</label>
             <select id="claseLibreta" name="claseLibreta">
               <option value="">-- Seleccione --</option>
-              <option value="primera">Primera</option>
-              <option value="segunda">Segunda</option>
             </select>
           </div>
         </div>
@@ -326,17 +305,9 @@
           </div>
           <div class="form-group">
             <label for="paisNacimiento">País <span class="required-mark">*</span></label>
+            <!-- Las opciones se cargan dinámicamente desde JS (Colombia + arreglo paises) -->
             <select id="paisNacimiento" name="paisNacimiento">
               <option value="">-- Seleccione --</option>
-              <option value="colombia" selected>Colombia</option>
-              <option value="venezuela">Venezuela</option>
-              <option value="ecuador">Ecuador</option>
-              <option value="peru">Perú</option>
-              <option value="brasil">Brasil</option>
-              <option value="mexico">México</option>
-              <option value="argentina">Argentina</option>
-              <option value="chile">Chile</option>
-              <option value="otro">Otro</option>
             </select>
             <span class="error-msg">Seleccione un país</span>
           </div>
@@ -344,48 +315,16 @@
             <label for="departamentoNacimiento">Departamento <span class="required-mark">*</span></label>
             <select id="departamentoNacimiento" name="departamentoNacimiento">
               <option value="">-- Seleccione --</option>
-              <option value="amazonas">Amazonas</option>
-              <option value="antioquia">Antioquia</option>
-              <option value="arauca">Arauca</option>
-              <option value="atlantico">Atlántico</option>
-              <option value="bolivar">Bolívar</option>
-              <option value="boyaca">Boyacá</option>
-              <option value="caldas">Caldas</option>
-              <option value="caqueta">Caquetá</option>
-              <option value="casanare">Casanare</option>
-              <option value="cauca">Cauca</option>
-              <option value="cesar">Cesar</option>
-              <option value="choco">Chocó</option>
-              <option value="cordoba">Córdoba</option>
-              <option value="cundinamarca">Cundinamarca</option>
-              <option value="guainia">Guainía</option>
-              <option value="guaviare">Guaviare</option>
-              <option value="huila">Huila</option>
-              <option value="laguajira">La Guajira</option>
-              <option value="magdalena">Magdalena</option>
-              <option value="meta">Meta</option>
-              <option value="narino">Nariño</option>
-              <option value="nortedesantander">Norte de Santander</option>
-              <option value="putumayo">Putumayo</option>
-              <option value="quindio">Quindío</option>
-              <option value="risaralda">Risaralda</option>
-              <option value="sanandres">San Andrés y Providencia</option>
-              <option value="santander">Santander</option>
-              <option value="sucre">Sucre</option>
-              <option value="tolima">Tolima</option>
-              <option value="valledelcauca">Valle del Cauca</option>
-              <option value="vaupes">Vaupés</option>
-              <option value="vichada">Vichada</option>
-              <option value="bogota">Bogotá D.C.</option>
             </select>
             <span class="error-msg">Seleccione un departamento</span>
           </div>
           <div class="form-group">
             <label for="municipioNacimiento">Municipio <span class="required-mark">*</span></label>
-            <input type="text" id="municipioNacimiento" name="municipioNacimiento"
-                   placeholder="Ej: Bogotá" maxlength="60">
-            <span class="hint">Se cargará según el departamento (con JS)</span>
-            <span class="error-msg">Ingrese el municipio</span>
+            <!-- Las opciones se cargan dinámicamente según el departamento seleccionado -->
+            <select id="municipioNacimiento" name="municipioNacimiento">
+              <option value="">-- Seleccione --</option>
+            </select>
+            <span class="error-msg">Seleccione el municipio</span>
           </div>
         </div>
       </section>
@@ -417,58 +356,26 @@
         <div class="form-grid cols-3 mt-2">
           <div class="form-group">
             <label for="paisCorrespondencia">País <span class="required-mark">*</span></label>
-            <select id="paisCorrespondencia" name="paisCorrespondencia">
-              <option value="">-- Seleccione --</option>
+            <!-- Solo Colombia: la correspondencia se envía únicamente dentro del país -->
+            <select id="paisCorrespondencia" name="paisCorrespondencia" disabled>
               <option value="colombia" selected>Colombia</option>
-              <option value="venezuela">Venezuela</option>
-              <option value="ecuador">Ecuador</option>
-              <option value="peru">Perú</option>
-              <option value="otro">Otro</option>
             </select>
           </div>
           <div class="form-group">
             <label for="departamentoCorrespondencia">Departamento <span class="required-mark">*</span></label>
+            <!-- Opciones cargadas dinámicamente desde el arreglo departamentos -->
             <select id="departamentoCorrespondencia" name="departamentoCorrespondencia">
               <option value="">-- Seleccione --</option>
-              <option value="amazonas">Amazonas</option>
-              <option value="antioquia">Antioquia</option>
-              <option value="arauca">Arauca</option>
-              <option value="atlantico">Atlántico</option>
-              <option value="bolivar">Bolívar</option>
-              <option value="boyaca">Boyacá</option>
-              <option value="caldas">Caldas</option>
-              <option value="caqueta">Caquetá</option>
-              <option value="casanare">Casanare</option>
-              <option value="cauca">Cauca</option>
-              <option value="cesar">Cesar</option>
-              <option value="choco">Chocó</option>
-              <option value="cordoba">Córdoba</option>
-              <option value="cundinamarca">Cundinamarca</option>
-              <option value="guainia">Guainía</option>
-              <option value="guaviare">Guaviare</option>
-              <option value="huila">Huila</option>
-              <option value="laguajira">La Guajira</option>
-              <option value="magdalena">Magdalena</option>
-              <option value="meta">Meta</option>
-              <option value="narino">Nariño</option>
-              <option value="nortedesantander">Norte de Santander</option>
-              <option value="putumayo">Putumayo</option>
-              <option value="quindio">Quindío</option>
-              <option value="risaralda">Risaralda</option>
-              <option value="sanandres">San Andrés y Providencia</option>
-              <option value="santander">Santander</option>
-              <option value="sucre">Sucre</option>
-              <option value="tolima">Tolima</option>
-              <option value="valledelcauca">Valle del Cauca</option>
-              <option value="vaupes">Vaupés</option>
-              <option value="vichada">Vichada</option>
-              <option value="bogota">Bogotá D.C.</option>
             </select>
+            <span class="error-msg">Seleccione un departamento</span>
           </div>
           <div class="form-group">
             <label for="municipioCorrespondencia">Municipio <span class="required-mark">*</span></label>
-            <input type="text" id="municipioCorrespondencia" name="municipioCorrespondencia"
-                   placeholder="Ej: Bogotá" maxlength="60">
+            <!-- Opciones cargadas dinámicamente según el departamento -->
+            <select id="municipioCorrespondencia" name="municipioCorrespondencia">
+              <option value="">-- Seleccione --</option>
+            </select>
+            <span class="error-msg">Seleccione un municipio</span>
           </div>
         </div>
 
@@ -562,9 +469,9 @@
         </button>
         <div class="btn-group">
           <a href="index.html" class="btn btn-secondary">← Volver</a>
-          <a href="formacion-academica.html" class="btn btn-primary">
+          <button type="button" class="btn btn-primary" id="btnSiguiente">
             Siguiente: Formación Académica →
-          </a>
+          </button>
         </div>
       </div>
 
