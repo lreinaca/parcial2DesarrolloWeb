@@ -244,6 +244,32 @@ selectDeptoCorre.addEventListener("change", function() {
 });
 
 // =====================================================
+// TIPO DE DOCUMENTO → NACIONALIDAD AUTOMÁTICA
+// =====================================================
+// Si elige "Cédula de ciudadanía" → nacionalidad Colombiana (no editable)
+// Si elige otro documento → nacionalidad Extranjera (no editable)
+const selectNacionalidad = document.getElementById("nacionalidad");
+
+selectDoc.addEventListener("change", function() {
+  if (this.value === "cedula_ciudadania") {
+    // Cédula de ciudadanía = Colombiana obligatoriamente
+    selectNacionalidad.value = "colombiana";
+    selectNacionalidad.disabled = true;
+  } else if (this.value !== "") {
+    // Cédula de extranjería o Pasaporte = Extranjera obligatoriamente
+    selectNacionalidad.value = "extranjera";
+    selectNacionalidad.disabled = true;
+  } else {
+    // No ha seleccionado tipo de documento, habilitar nacionalidad
+    selectNacionalidad.value = "";
+    selectNacionalidad.disabled = false;
+  }
+  // Disparar el evento "change" de nacionalidad para ejecutar su lógica
+  // (mostrar/ocultar país extranjero, sincronizar departamentos, etc.)
+  selectNacionalidad.dispatchEvent(new Event("change"));
+});
+
+// =====================================================
 // CARGAR MUNICIPIOS según el departamento seleccionado
 // =====================================================
 // Función reutilizable que limpia un <select> y carga nuevos municipios
@@ -272,7 +298,7 @@ selectDeptoNac.addEventListener("change", function() {
 // "Extranjera" en el select de Nacionalidad
 // + SINCRONIZAR con el <select> de País de Nacimiento
 // =====================================================
-const selectNacionalidad = document.getElementById("nacionalidad");
+// selectNacionalidad ya fue declarado arriba (sección Tipo de Documento)
 const grupoPais = document.getElementById("grupoPaisExtranjero");
 // selectPaisNac ya fue declarado arriba junto con las demás referencias
 
@@ -283,21 +309,22 @@ selectNacionalidad.addEventListener("change", function() {
     grupoPais.classList.remove("hidden");
     // Sincronizar país de nacimiento con el país extranjero seleccionado
     selectPaisNac.value = selectPais.value;
-    // Poner "Extranjero" como único opción en departamento
+    selectPaisNac.disabled = true; // No editable, se sincroniza con país extranjero
+    // Ocultar departamento y municipio (no aplica para extranjeros)
+    document.getElementById("grupoDeptoNac").classList.add("hidden");
+    document.getElementById("grupoMuniNac").classList.add("hidden");
     selectDeptoNac.innerHTML = '<option value="">-- Seleccione --</option>';
-    const optExtranjero = document.createElement("option");
-    optExtranjero.value = "extranjero";
-    optExtranjero.textContent = "Extranjero";
-    optExtranjero.selected = true;
-    selectDeptoNac.appendChild(optExtranjero);
-    // Limpiar municipio (no aplica para extranjeros)
-    selectMunicipioNac.innerHTML = '<option value="">-- No aplica --</option>';
+    selectMunicipioNac.innerHTML = '<option value="">-- Seleccione --</option>';
   } else if (this.value === "colombiana") {
     // Si eligió "Colombiana", ocultar campo país extranjero y limpiar
     grupoPais.classList.add("hidden");
     selectPais.value = "";
-    // Establecer automáticamente Colombia como país de nacimiento
+    // Establecer automáticamente Colombia como país de nacimiento (no editable)
     selectPaisNac.value = "colombia";
+    selectPaisNac.disabled = true;
+    // Mostrar departamento y municipio (aplica para colombianos)
+    document.getElementById("grupoDeptoNac").classList.remove("hidden");
+    document.getElementById("grupoMuniNac").classList.remove("hidden");
     // Recargar los departamentos de Colombia
     selectDeptoNac.innerHTML = '<option value="">-- Seleccione --</option>';
     departamentos.forEach(function(depto) {
@@ -313,6 +340,10 @@ selectNacionalidad.addEventListener("change", function() {
     grupoPais.classList.add("hidden");
     selectPais.value = "";
     selectPaisNac.value = "";
+    selectPaisNac.disabled = false; // Habilitar si no hay nacionalidad seleccionada
+    // Mostrar departamento y municipio por defecto
+    document.getElementById("grupoDeptoNac").classList.remove("hidden");
+    document.getElementById("grupoMuniNac").classList.remove("hidden");
     selectDeptoNac.innerHTML = '<option value="">-- Seleccione --</option>';
     selectMunicipioNac.innerHTML = '<option value="">-- Seleccione --</option>';
   }
@@ -321,6 +352,40 @@ selectNacionalidad.addEventListener("change", function() {
 // Cuando cambia el país extranjero, sincronizar con país de nacimiento
 selectPais.addEventListener("change", function() {
   selectPaisNac.value = this.value;
+});
+
+// =====================================================
+// FECHA DE NACIMIENTO: restricción de mayor de edad (18+)
+// =====================================================
+const inputFechaNac = document.getElementById("fechaNacimiento");
+// Calcular la fecha máxima permitida (hoy menos 18 años)
+const hoy = new Date();
+const fechaMaxima = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
+// Formato YYYY-MM-DD para el atributo max del input date
+const maxISO = fechaMaxima.toISOString().split("T")[0];
+inputFechaNac.setAttribute("max", maxISO);
+
+// Validar en tiempo real: si el usuario escribe o selecciona una fecha inválida
+inputFechaNac.addEventListener("change", function() {
+  const grupo = this.closest(".form-group");
+  const errorMsg = grupo ? grupo.querySelector(".error-msg") : null;
+
+  if (this.value) {
+    const nacimiento = new Date(this.value);
+    if (nacimiento > fechaMaxima) {
+      // Fecha inválida: menor de 18 años → borrar y mostrar error
+      this.value = "";
+      this.classList.add("error");
+      if (errorMsg) {
+        errorMsg.textContent = "Debe ser mayor de 18 años";
+        errorMsg.style.display = "block";
+      }
+    } else {
+      // Fecha válida → limpiar error
+      this.classList.remove("error");
+      if (errorMsg) errorMsg.style.display = "none";
+    }
+  }
 });
 
 // =====================================================
@@ -347,69 +412,113 @@ radiosLibreta.forEach(function(radio) {
 });
 
 // =====================================================
-// PREVISUALIZACIÓN DE DATOS
+// PREVISUALIZACIÓN DE DATOS (enfoque data-driven)
 // =====================================================
 // Función auxiliar: obtiene el texto visible de un <select>
 function textoSelect(select) {
   return select.selectedIndex > 0 ? select.options[select.selectedIndex].text : "---";
 }
 
-const btnPreview = document.getElementById("btnPreview");
+// Arreglo que define qué mostrar en la previsualización
+// Cada objeto tiene: idPreview (span destino) y valor (función que retorna el texto)
+const camposPreview = [
+  {
+    idPreview: "prevNombre",
+    valor: function() {
+      return [
+        document.getElementById("primerApellido").value,
+        document.getElementById("segundoApellido").value,
+        document.getElementById("primerNombre").value,
+        document.getElementById("segundoNombre").value
+      ].filter(function(v) { return v.trim() !== ""; }).join(" ") || "---";
+    }
+  },
+  {
+    idPreview: "prevDocumento",
+    valor: function() {
+      var num = document.getElementById("numeroDocumento").value;
+      return num ? textoSelect(selectDoc) + " " + num : "---";
+    }
+  },
+  {
+    idPreview: "prevSexo",
+    valor: function() { return textoSelect(selectSexo); }
+  },
+  {
+    idPreview: "prevFechaNac",
+    valor: function() {
+      var raw = document.getElementById("fechaNacimiento").value;
+      if (!raw) return "---";
+      var p = raw.split("-");
+      return p[2] + "/" + p[1] + "/" + p[0];
+    }
+  },
+  {
+    idPreview: "prevNacionalidad",
+    valor: function() {
+      var nac = textoSelect(selectNacionalidad);
+      if (nac === "---") return "---";
+      var extra = selectNacionalidad.value === "extranjera" ? " - " + textoSelect(selectPais) : "";
+      return nac + extra;
+    }
+  },
+  {
+    idPreview: "prevLugarNac",
+    valor: function() {
+      var partes = [textoSelect(selectPaisNac), textoSelect(selectDeptoNac), textoSelect(selectMunicipioNac)]
+        .filter(function(v) { return v !== "---"; });
+      return partes.length > 0 ? partes.join(", ") : "---";
+    }
+  },
+  {
+    idPreview: "prevCelular",
+    valor: function() { return document.getElementById("celular").value || "---"; }
+  },
+  {
+    idPreview: "prevEmail",
+    valor: function() { return document.getElementById("email").value || "---"; }
+  },
+  {
+    idPreview: "prevDireccion",
+    valor: function() { return document.getElementById("direccionCorrespondencia").value || "---"; }
+  },
+  {
+    idPreview: "prevCorrespondencia",
+    valor: function() {
+      var partes = [textoSelect(selectDeptoCorre), textoSelect(selectMunicipioCorr)]
+        .filter(function(v) { return v !== "---"; });
+      return partes.length > 0 ? partes.join(", ") : "---";
+    }
+  }
+];
+
+// Función que llena todos los campos de la previsualización
+function llenarPreview() {
+  camposPreview.forEach(function(campo) {
+    document.getElementById(campo.idPreview).textContent = campo.valor();
+  });
+}
+
 const panelPreview = document.getElementById("previewDatos");
 
+// Botón "Previsualizar" → solo muestra/oculta el panel
+const btnPreview = document.getElementById("btnPreview");
 btnPreview.addEventListener("click", function() {
-  // Nombre completo: Primer Apellido + Segundo Apellido + Primer Nombre + Segundo Nombre
-  const nombre = [
-    document.getElementById("primerApellido").value,
-    document.getElementById("segundoApellido").value,
-    document.getElementById("primerNombre").value,
-    document.getElementById("segundoNombre").value
-  ].filter(function(val) { return val.trim() !== ""; }).join(" ");
-  document.getElementById("prevNombre").textContent = nombre || "---";
-
-  // Documento: Tipo + Número
-  const tipoDoc = textoSelect(selectDoc);
-  const numDoc = document.getElementById("numeroDocumento").value;
-  document.getElementById("prevDocumento").textContent =
-    numDoc ? tipoDoc + " " + numDoc : "---";
-
-  // Fecha de nacimiento (formatear de YYYY-MM-DD a DD/MM/YYYY)
-  const fechaRaw = document.getElementById("fechaNacimiento").value;
-  if (fechaRaw) {
-    const partes = fechaRaw.split("-"); // ["YYYY", "MM", "DD"]
-    document.getElementById("prevFechaNac").textContent =
-      partes[2] + "/" + partes[1] + "/" + partes[0];
-  } else {
-    document.getElementById("prevFechaNac").textContent = "---";
-  }
-
-  // Nacionalidad + país si es extranjera
-  const nac = textoSelect(selectNacionalidad);
-  const paisExtra = selectNacionalidad.value === "extranjera" ? " - " + textoSelect(selectPais) : "";
-  document.getElementById("prevNacionalidad").textContent =
-    nac !== "---" ? nac + paisExtra : "---";
-
-  // Celular
-  const celular = document.getElementById("celular").value;
-  document.getElementById("prevCelular").textContent = celular || "---";
-
-  // Correo electrónico
-  const email = document.getElementById("email").value;
-  document.getElementById("prevEmail").textContent = email || "---";
-
-  // Dirección de correspondencia
-  const direccion = document.getElementById("direccionCorrespondencia").value;
-  document.getElementById("prevDireccion").textContent = direccion || "---";
-
-  // Lugar de nacimiento: País, Departamento, Municipio
-  const paisNac = textoSelect(selectPaisNac);
-  const deptoNac = textoSelect(selectDeptoNac);
-  const muniNac = textoSelect(selectMunicipioNac);
-  const partes = [paisNac, deptoNac, muniNac].filter(function(val) { return val !== "---"; });
-  document.getElementById("prevLugarNac").textContent = partes.length > 0 ? partes.join(", ") : "---";
-
-  // Mostrar u ocultar el panel (toggle)
+  llenarPreview();
   panelPreview.classList.toggle("visible");
+});
+
+// Botón "Corregir datos" → cierra el panel y hace scroll al inicio del formulario
+const btnCorregir = document.getElementById("btnCorregir");
+btnCorregir.addEventListener("click", function() {
+  panelPreview.classList.remove("visible");
+  document.querySelector("form").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+// Botón "Confirmar datos" → navega al paso 2
+const btnConfirmar = document.getElementById("btnConfirmar");
+btnConfirmar.addEventListener("click", function() {
+  window.location.href = "formacion-academica.html";
 });
 
 // =====================================================
@@ -448,6 +557,13 @@ function validarFormulario() {
     const grupo = elemento.closest(".form-group");
     const errorMsg = grupo ? grupo.querySelector(".error-msg") : null;
 
+    // Si es extranjera, omitir departamento y municipio de nacimiento (están ocultos)
+    if (esExtranjera && (campo.id === "departamentoNacimiento" || campo.id === "municipioNacimiento")) {
+      elemento.classList.remove("error");
+      if (errorMsg) errorMsg.style.display = "none";
+      return; // Saltar este campo
+    }
+
     let vacio = false;
     if (campo.tipo === "input") {
       vacio = elemento.value.trim() === "";
@@ -466,6 +582,28 @@ function validarFormulario() {
       if (errorMsg) errorMsg.style.display = "none";
     }
   });
+
+  // Validar que la fecha de nacimiento sea de mayor de edad (18+)
+  const inputFecha = document.getElementById("fechaNacimiento");
+  const grupoFecha = inputFecha.closest(".form-group");
+  const errorFecha = grupoFecha ? grupoFecha.querySelector(".error-msg") : null;
+  if (inputFecha.value) {
+    const nacimiento = new Date(inputFecha.value);
+    const hoyVal = new Date();
+    let edad = hoyVal.getFullYear() - nacimiento.getFullYear();
+    const mesDiff = hoyVal.getMonth() - nacimiento.getMonth();
+    if (mesDiff < 0 || (mesDiff === 0 && hoyVal.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+    if (edad < 18) {
+      inputFecha.classList.add("error");
+      if (errorFecha) {
+        errorFecha.textContent = "Debe ser mayor de 18 años";
+        errorFecha.style.display = "block";
+      }
+      esValido = false;
+    }
+  }
 
   // Validar país extranjero solo si eligió nacionalidad extranjera
   if (esExtranjera) {
@@ -496,11 +634,15 @@ camposObligatorios.forEach(function(campo) {
 });
 
 // Botón "Siguiente" → validar antes de navegar al paso 2
+// Si la validación es correcta, muestra la previsualización para confirmación
 const btnSiguiente = document.getElementById("btnSiguiente");
 btnSiguiente.addEventListener("click", function() {
   if (validarFormulario()) {
-    // Todo correcto, ir al paso 2
-    window.location.href = "formacion-academica.html";
+    // Validación OK → avisar al usuario y mostrar previsualización
+    alert("A continuación se mostrará la previsualización de sus datos.\nPor favor verifique que la información sea correcta antes de continuar a la siguiente sección.");
+    llenarPreview();
+    panelPreview.classList.add("visible");
+    panelPreview.scrollIntoView({ behavior: "smooth", block: "center" });
   } else {
     // Hacer scroll al primer campo con error
     const primerError = document.querySelector(".form-group .error");

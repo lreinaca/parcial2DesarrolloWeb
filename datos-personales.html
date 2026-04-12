@@ -299,8 +299,7 @@
         <div class="form-grid cols-3">
           <div class="form-group">
             <label for="fechaNacimiento">Fecha de Nacimiento <span class="required-mark">*</span></label>
-            <input type="date" id="fechaNacimiento" name="fechaNacimiento"
-                   min="1940-01-01" max="2010-12-31">
+            <input type="date" id="fechaNacimiento" name="fechaNacimiento">
             <span class="error-msg">Seleccione su fecha de nacimiento</span>
           </div>
           <div class="form-group">
@@ -311,14 +310,14 @@
             </select>
             <span class="error-msg">Seleccione un país</span>
           </div>
-          <div class="form-group">
+          <div class="form-group" id="grupoDeptoNac">
             <label for="departamentoNacimiento">Departamento <span class="required-mark">*</span></label>
             <select id="departamentoNacimiento" name="departamentoNacimiento">
               <option value="">-- Seleccione --</option>
             </select>
             <span class="error-msg">Seleccione un departamento</span>
           </div>
-          <div class="form-group">
+          <div class="form-group" id="grupoMuniNac">
             <label for="municipioNacimiento">Municipio <span class="required-mark">*</span></label>
             <!-- Las opciones se cargan dinámicamente según el departamento seleccionado -->
             <select id="municipioNacimiento" name="municipioNacimiento">
@@ -426,12 +425,20 @@
             <span class="preview-value" id="prevDocumento">---</span>
           </div>
           <div class="preview-item">
+            <span class="preview-label">Sexo</span>
+            <span class="preview-value" id="prevSexo">---</span>
+          </div>
+          <div class="preview-item">
             <span class="preview-label">Fecha de Nacimiento</span>
             <span class="preview-value" id="prevFechaNac">---</span>
           </div>
           <div class="preview-item">
             <span class="preview-label">Nacionalidad</span>
             <span class="preview-value" id="prevNacionalidad">---</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Lugar de Nacimiento</span>
+            <span class="preview-value" id="prevLugarNac">---</span>
           </div>
           <div class="preview-item">
             <span class="preview-label">Celular</span>
@@ -446,9 +453,13 @@
             <span class="preview-value" id="prevDireccion">---</span>
           </div>
           <div class="preview-item">
-            <span class="preview-label">Lugar de Nacimiento</span>
-            <span class="preview-value" id="prevLugarNac">---</span>
+            <span class="preview-label">Correspondencia</span>
+            <span class="preview-value" id="prevCorrespondencia">---</span>
           </div>
+        </div>
+        <div class="preview-actions">
+          <button type="button" class="btn btn-secondary" id="btnCorregir">✏️ Corregir datos</button>
+          <button type="button" class="btn btn-primary" id="btnConfirmar">✅ Datos correctos, continuar</button>
         </div>
       </div>
 

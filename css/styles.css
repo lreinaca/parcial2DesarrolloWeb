@@ -804,6 +804,16 @@ section .section-subtitle {
   font-weight: 500;
 }
 
+/* Botones de acción dentro del panel de previsualización */
+.preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
 /* ========== 10. STATUS BADGES (Etiquetas de estado) ==========
    Etiquetas tipo "pill" (redondeadas) para mostrar estados:
    - badge-success → verde (✅ Aceptada)
