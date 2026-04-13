@@ -64,35 +64,6 @@
       </div>
 
       <!--
-        SELECTOR DE ROL: Dos "tarjetas" tipo radio button.
-        Cada <label> envuelve un <input type="radio">, así que al hacer
-        clic en cualquier parte de la tarjeta se selecciona el radio.
-        - .role-option: Estilo base de cada tarjeta
-        - .selected: Clase que resalta la opción elegida (borde azul)
-        La clase .selected se debe alternar con JavaScript al cambiar
-        el radio (actualmente no hay JS conectado, pero la estructura
-        está lista para ello).
-      -->
-      <div class="role-selector">
-        <label class="role-option selected">
-          <a href="datos-personales.html">
-            <input type="radio" name="role" value="usuario" checked>
-            <div class="role-icon">👤</div>
-            <div class="role-name">Usuario</div>
-          </a>
-        </label>
-        
-        <label class="role-option">
-          <a href="admin.html">
-            <input type="radio" name="role" value="admin">
-            <div class="role-icon">🛡️</div>
-            <div class="role-name">Administrador</div>
-          </a>
-        </label>
-        
-      </div>
-
-      <!--
         FORMULARIO DE LOGIN:
         - action="datos-personales.html": al hacer submit, navega al paso 1
           (en una app real, esto iría al servidor para validar credenciales)
@@ -103,7 +74,7 @@
         - Los <span class="error-msg"> son mensajes de error ocultos por defecto,
           se mostrarían con JS al validar
       -->
-      <form id="loginForm" action="datos-personales.html" method="get">
+      <form id="loginForm">
         <div class="form-group">
           <label for="usuario">Usuario <span class="required-mark">*</span></label>
           <input type="text" id="usuario" name="usuario" placeholder="Ingrese su usuario"
@@ -139,6 +110,6 @@
     action según el rol seleccionado (usuario → datos-personales.html,
     admin → admin.html).
   -->
-  <!-- <script src="js/login.js"></script> -->
+  <script src="js/index.js"></script>
 </body>
 </html>
