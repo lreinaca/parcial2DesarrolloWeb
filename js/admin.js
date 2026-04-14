@@ -4,8 +4,8 @@
 const hojasDeVida = [
   {
     id: 1,
-    primerNombre: "Juan Carlos",
-    segundoNombre: "",
+    primerNombre: "Juan",
+    segundoNombre: "Carlos",
     primerApellido: "García",
     segundoApellido: "López",
     tipoDocumento: "Cédula de ciudadania",
@@ -31,8 +31,8 @@ const hojasDeVida = [
   },
   {
     id: 2,
-    primerNombre: "María Fernanda",
-    segundoNombre: "",
+    primerNombre: "María",
+    segundoNombre: "Fernanda",
     primerApellido: "Rodríguez",
     segundoApellido: "Pérez",
     tipoDocumento: "Cédula de ciudadania",
@@ -58,8 +58,8 @@ const hojasDeVida = [
   },
   {
     id: 3,
-    primerNombre: "Carlos Andrés",
-    segundoNombre: "",
+    primerNombre: "Carlos",
+    segundoNombre: "Andrés",
     primerApellido: "Martínez",
     segundoApellido: "Rivera",
     tipoDocumento: "Cédula de ciudadania",

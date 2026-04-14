@@ -159,6 +159,7 @@ img {
   - z-index: 100 → se superpone sobre el contenido al hacer scroll
 */
 header {
+  height: 70px; /* altura fija */
   background: linear-gradient(135deg, var(--primary-dark), var(--primary));
   color: #fff;
   padding: 1rem 2rem;
@@ -178,10 +179,11 @@ header .header-inner {
   justify-content: space-between; /* Separa elementos a los extremos */
 }
 
-header h1 {
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+header .logo {
+  width: 130px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
 /* La palabra "Vida" en el título se muestra en color dorado */
