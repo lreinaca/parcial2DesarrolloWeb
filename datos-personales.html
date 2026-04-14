@@ -355,10 +355,10 @@
         <div class="form-grid cols-3 mt-2">
           <div class="form-group">
             <label for="paisCorrespondencia">País <span class="required-mark">*</span></label>
-            <!-- Solo Colombia: la correspondencia se envía únicamente dentro del país -->
-            <select id="paisCorrespondencia" name="paisCorrespondencia" disabled>
-              <option value="colombia" selected>Colombia</option>
+            <select id="paisCorrespondencia" name="paisCorrespondencia">
+              <option value="">-- Seleccione --</option>
             </select>
+            <span class="error-msg">Seleccione un país</span>
           </div>
           <div class="form-group">
             <label for="departamentoCorrespondencia">Departamento <span class="required-mark">*</span></label>

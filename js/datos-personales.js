@@ -1,7 +1,4 @@
-// =====================================================
-// ARREGLOS
-// =====================================================
-// Cada elemento tiene: valor (value del option) y nombre (texto visible)
+// ARREGLOS DE OPCIONES PARA LOS SELECT
 const paises = [
   { valor: "afghanistan", nombre: "Afganistán" },
   { valor: "alemania", nombre: "Alemania" },
@@ -77,7 +74,7 @@ const departamentos = [
   { valor: "bogota", nombre: "Bogotá D.C." }
 ];
 
-// Municipios por departamento (5 por cada uno)
+// MUNICIPIOS POR DEPARTAMENTO
 const municipios = {
   amazonas: ["Leticia", "Puerto Nariño", "La Chorrera", "Tarapacá", "La Pedrera"],
   antioquia: ["Medellín", "Bello", "Envigado", "Itagüí", "Rionegro"],
@@ -153,7 +150,7 @@ const listaClaseLibr = [
   { valor: "segunda", nombre: "Segunda" }
   ]
 
-// Referencia al <select>
+// REFERENCIAS A LOS SELECT (para acceder fácilmente desde JavaScript)
 const selectPais = document.getElementById("paisExtranjero");
 const selectDoc = document.getElementById("tipoDocumento")
 const selectSexo = document.getElementById("sexo")
@@ -164,119 +161,91 @@ const selectDeptoNac = document.getElementById("departamentoNacimiento")
 const selectMunicipioNac = document.getElementById("municipioNacimiento")
 const selectDeptoCorre = document.getElementById("departamentoCorrespondencia")
 const selectMunicipioCorr = document.getElementById("municipioCorrespondencia")
+const selectPaisCorr = document.getElementById("paisCorrespondencia")
 
-
-// Recorrer el arreglo y crear un <option> por cada país
-paises.forEach(function(pais) {
-  const option = document.createElement("option"); // Crear elemento <option>
-  option.value = pais.valor;   // Asignar el value (ej: "mexico")
-  option.textContent = pais.nombre; // Asignar el texto visible (ej: "México")
-  selectPais.appendChild(option);   // Agregarlo al <select>
-});
-
-// Recorrer el arreglo y crear un <option> por tipo de documento
-tipo_docs.forEach(function(tipoDocumento) {
-  const option = document.createElement("option"); // Crear elemento <option>
-  option.value = tipoDocumento.valor; 
-  option.textContent = tipoDocumento.nombre; 
-  selectDoc.appendChild(option);   // Agregarlo al <select>
-});
-
-// Recorrer el arreglo y crear un <option> por sexo
-listaSexo.forEach(function(sexo) {
-  const option = document.createElement("option"); // Crear elemento <option>
-  option.value = sexo.valor; 
-  option.textContent = sexo.nombre; 
-  selectSexo.appendChild(option);   // Agregarlo al <select>
-});
-
-// Recorrer el arreglo y crear un <option> por cada distrito militar 
-listaDistritos.forEach(function(distritoMilitar){
-  const option = document.createElement("option"); // Crear elemento <option>
-  option.value = distritoMilitar.valor; // Asignar el value al option por cada distrito
-  option.textContent = distritoMilitar.nombre; // Asignar el texto visible
-  selectDistrito.appendChild(option) // Agregarlo al <select>
+// FUNCIÓN REUTILIZABLE: agregar opciones a un select desde un arreglo
+function agregarOpciones(select, arreglo) {
+  arreglo.forEach(function(item) {
+    const option = document.createElement("option");
+    option.value = item.valor;
+    option.textContent = item.nombre;
+    select.appendChild(option);
+  });
 }
-)
 
-// Recorrer el arreglo y crear un <option> por cada tipo de libreta 
-listaClaseLibr.forEach(function(claseLibreta){
-  const option = document.createElement("option"); // Crear elemento <option>
-  option.value = claseLibreta.valor; // Asignar el value al option por cada tipo de libreta
-  option.textContent = claseLibreta.nombre; // Asignar el texto visible
-  selectClaseLibr.appendChild(option) // Agregarlo al <select>
-})
+// CARGAR OPCIONES EN CADA SELECT
+agregarOpciones(selectPais, paises);
+agregarOpciones(selectDoc, tipo_docs);
+agregarOpciones(selectSexo, listaSexo);
+agregarOpciones(selectDistrito, listaDistritos);
+agregarOpciones(selectClaseLibr, listaClaseLibr);
 
-// Cargar dinámicamente el <select> de País de Nacimiento
-// Se agrega Colombia primero (ya que es el valor por defecto) y luego todos los países del arreglo
+// PAÍS DE NACIMIENTO: Colombia + otros países
 const optionColombia = document.createElement("option");
 optionColombia.value = "colombia";
 optionColombia.textContent = "Colombia";
-optionColombia.selected = true; // Seleccionado por defecto
+optionColombia.selected = true;
 selectPaisNac.appendChild(optionColombia);
+agregarOpciones(selectPaisNac, paises);
 
-paises.forEach(function(pais) {
-  const option = document.createElement("option");
-  option.value = pais.valor;
-  option.textContent = pais.nombre;
-  selectPaisNac.appendChild(option);
+// DEPARTAMENTOS DE NACIMIENTO
+agregarOpciones(selectDeptoNac, departamentos);
+
+// DEPARTAMENTOS DE CORRESPONDENCIA
+agregarOpciones(selectDeptoCorre, departamentos);
+
+// PAÍS DE CORRESPONDENCIA: ahora permite cambiar de país
+function cargarPaisesCorrespondencia() {
+  selectPaisCorr.innerHTML = '<option value="">-- Seleccione --</option>';
+  const optionCol = document.createElement("option");
+  optionCol.value = "colombia";
+  optionCol.textContent = "Colombia";
+  optionCol.selected = true;
+  selectPaisCorr.appendChild(optionCol);
+  agregarOpciones(selectPaisCorr, paises);
+}
+cargarPaisesCorrespondencia();
+
+// CUANDO CAMBIA EL PAÍS DE CORRESPONDENCIA
+selectPaisCorr.addEventListener("change", function() {
+  selectDeptoCorre.innerHTML = '<option value="">-- Seleccione --</option>';
+  selectMunicipioCorr.innerHTML = '<option value="">-- Seleccione --</option>';
+
+  if (this.value === "colombia") {
+    // Si selecciona Colombia, mostrar departamentos y municipios
+    agregarOpciones(selectDeptoCorre, departamentos);
+  } else if (this.value !== "") {
+    // Si selecciona otro país, no mostrar departamentos (no aplica)
+    selectDeptoCorre.parentElement.style.display = "none";
+    selectMunicipioCorr.parentElement.style.display = "none";
+  }
 });
 
-// Cargar dinámicamente el <select> de Departamento de Nacimiento
-departamentos.forEach(function(depto) {
-  const option = document.createElement("option");
-  option.value = depto.valor;
-  option.textContent = depto.nombre;
-  selectDeptoNac.appendChild(option);
-});
-
-// Cargar dinámicamente el <select> de Departamento de Correspondencia (solo Colombia)
-departamentos.forEach(function(depto) {
-  const option = document.createElement("option");
-  option.value = depto.valor;
-  option.textContent = depto.nombre;
-  selectDeptoCorre.appendChild(option);
-});
-
-// Cuando cambia el departamento de correspondencia, cargar sus municipios
+// CUANDO CAMBIA EL DEPARTAMENTO DE CORRESPONDENCIA
 selectDeptoCorre.addEventListener("change", function() {
   cargarMunicipios(selectMunicipioCorr, this.value);
 });
 
-// =====================================================
-// TIPO DE DOCUMENTO → NACIONALIDAD AUTOMÁTICA
-// =====================================================
-// Si elige "Cédula de ciudadanía" → nacionalidad Colombiana (no editable)
-// Si elige otro documento → nacionalidad Extranjera (no editable)
+// TIPO DE DOCUMENTO DEFINE LA NACIONALIDAD
 const selectNacionalidad = document.getElementById("nacionalidad");
 
 selectDoc.addEventListener("change", function() {
   if (this.value === "cedula_ciudadania") {
-    // Cédula de ciudadanía = Colombiana obligatoriamente
     selectNacionalidad.value = "colombiana";
     selectNacionalidad.disabled = true;
   } else if (this.value !== "") {
-    // Cédula de extranjería o Pasaporte = Extranjera obligatoriamente
     selectNacionalidad.value = "extranjera";
     selectNacionalidad.disabled = true;
   } else {
-    // No ha seleccionado tipo de documento, habilitar nacionalidad
     selectNacionalidad.value = "";
     selectNacionalidad.disabled = false;
   }
-  // Disparar el evento "change" de nacionalidad para ejecutar su lógica
-  // (mostrar/ocultar país extranjero, sincronizar departamentos, etc.)
   selectNacionalidad.dispatchEvent(new Event("change"));
 });
 
-// =====================================================
-// CARGAR MUNICIPIOS según el departamento seleccionado
-// =====================================================
-// Función reutilizable que limpia un <select> y carga nuevos municipios
+// FUNCIÓN PARA CARGAR MUNICIPIOS según departamento
 function cargarMunicipios(selectMunicipio, departamentoValor) {
-  // Limpiar opciones anteriores (dejar solo el placeholder)
   selectMunicipio.innerHTML = '<option value="">-- Seleccione --</option>';
-  // Buscar los municipios del departamento en el objeto municipios
   const listaMunicipios = municipios[departamentoValor];
   if (listaMunicipios) {
     listaMunicipios.forEach(function(nombre) {
@@ -288,60 +257,53 @@ function cargarMunicipios(selectMunicipio, departamentoValor) {
   }
 }
 
-// Cuando cambia el departamento de nacimiento, cargar sus municipios
+// CUANDO CAMBIA EL DEPARTAMENTO DE NACIMIENTO, CARGAR SUS MUNICIPIOS
 selectDeptoNac.addEventListener("change", function() {
   cargarMunicipios(selectMunicipioNac, this.value);
 });
 
-// =====================================================
-// MOSTRAR/OCULTAR el campo País cuando se elige
-// "Extranjera" en el select de Nacionalidad
-// + SINCRONIZAR con el <select> de País de Nacimiento
-// =====================================================
-// selectNacionalidad ya fue declarado arriba (sección Tipo de Documento)
+// NACIONALIDAD: mostrar/ocultar país extranjero y sincronizar datos
 const grupoPais = document.getElementById("grupoPaisExtranjero");
-// selectPaisNac ya fue declarado arriba junto con las demás referencias
 
-// Escuchar cada vez que cambia la selección de nacionalidad
 selectNacionalidad.addEventListener("change", function() {
   if (this.value === "extranjera") {
-    // Si eligió "Extranjera", mostrar el campo de país (quitar clase .hidden)
+    // Mostrar el campo para seleccionar país extranjero
     grupoPais.classList.remove("hidden");
-    // Sincronizar país de nacimiento con el país extranjero seleccionado
-    selectPaisNac.value = selectPais.value;
-    selectPaisNac.disabled = true; // No editable, se sincroniza con país extranjero
+    selectPais.disabled = false; // PERMITIR que el usuario seleccione
+
+    // Si el usuario ya seleccionó un país, usarlo como país de nacimiento
+    if (selectPais.value) {
+      selectPaisNac.value = selectPais.value;
+    }
+
     // Ocultar departamento y municipio (no aplica para extranjeros)
     document.getElementById("grupoDeptoNac").classList.add("hidden");
     document.getElementById("grupoMuniNac").classList.add("hidden");
     selectDeptoNac.innerHTML = '<option value="">-- Seleccione --</option>';
     selectMunicipioNac.innerHTML = '<option value="">-- Seleccione --</option>';
+
   } else if (this.value === "colombiana") {
-    // Si eligió "Colombiana", ocultar campo país extranjero y limpiar
+    // Ocultar campo país extranjero
     grupoPais.classList.add("hidden");
     selectPais.value = "";
-    // Establecer automáticamente Colombia como país de nacimiento (no editable)
+
+    // Colombia como país de nacimiento (automático)
     selectPaisNac.value = "colombia";
     selectPaisNac.disabled = true;
-    // Mostrar departamento y municipio (aplica para colombianos)
+
+    // Mostrar departamento y municipio
     document.getElementById("grupoDeptoNac").classList.remove("hidden");
     document.getElementById("grupoMuniNac").classList.remove("hidden");
-    // Recargar los departamentos de Colombia
     selectDeptoNac.innerHTML = '<option value="">-- Seleccione --</option>';
-    departamentos.forEach(function(depto) {
-      const option = document.createElement("option");
-      option.value = depto.valor;
-      option.textContent = depto.nombre;
-      selectDeptoNac.appendChild(option);
-    });
-    // Limpiar municipio (se cargará al seleccionar departamento)
+    agregarOpciones(selectDeptoNac, departamentos);
     selectMunicipioNac.innerHTML = '<option value="">-- Seleccione --</option>';
+
   } else {
-    // Si no seleccionó nada, ocultar y limpiar
+    // No ha seleccionado nacionalidad
     grupoPais.classList.add("hidden");
     selectPais.value = "";
     selectPaisNac.value = "";
-    selectPaisNac.disabled = false; // Habilitar si no hay nacionalidad seleccionada
-    // Mostrar departamento y municipio por defecto
+    selectPaisNac.disabled = false;
     document.getElementById("grupoDeptoNac").classList.remove("hidden");
     document.getElementById("grupoMuniNac").classList.remove("hidden");
     selectDeptoNac.innerHTML = '<option value="">-- Seleccione --</option>';
@@ -349,23 +311,21 @@ selectNacionalidad.addEventListener("change", function() {
   }
 });
 
-// Cuando cambia el país extranjero, sincronizar con país de nacimiento
+// CUANDO CAMBIA EL PAÍS EXTRANJERO, SINCRONIZAR CON PAÍS DE NACIMIENTO
 selectPais.addEventListener("change", function() {
-  selectPaisNac.value = this.value;
+  if (this.value) {
+    selectPaisNac.value = this.value;
+    selectPaisNac.disabled = true;
+  }
 });
 
-// =====================================================
-// FECHA DE NACIMIENTO: restricción de mayor de edad (18+)
-// =====================================================
+// FECHA DE NACIMIENTO: solo permite mayores de 18 años
 const inputFechaNac = document.getElementById("fechaNacimiento");
-// Calcular la fecha máxima permitida (hoy menos 18 años)
 const hoy = new Date();
 const fechaMaxima = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
-// Formato YYYY-MM-DD para el atributo max del input date
 const maxISO = fechaMaxima.toISOString().split("T")[0];
 inputFechaNac.setAttribute("max", maxISO);
 
-// Validar en tiempo real: si el usuario escribe o selecciona una fecha inválida
 inputFechaNac.addEventListener("change", function() {
   const grupo = this.closest(".form-group");
   const errorMsg = grupo ? grupo.querySelector(".error-msg") : null;
@@ -373,7 +333,6 @@ inputFechaNac.addEventListener("change", function() {
   if (this.value) {
     const nacimiento = new Date(this.value);
     if (nacimiento > fechaMaxima) {
-      // Fecha inválida: menor de 18 años → borrar y mostrar error
       this.value = "";
       this.classList.add("error");
       if (errorMsg) {
@@ -381,28 +340,21 @@ inputFechaNac.addEventListener("change", function() {
         errorMsg.style.display = "block";
       }
     } else {
-      // Fecha válida → limpiar error
       this.classList.remove("error");
       if (errorMsg) errorMsg.style.display = "none";
     }
   }
 });
 
-// =====================================================
-// MOSTRAR/OCULTAR la sección Libreta Militar según
-// el radio button "tieneLibreta" (Sí / No)
-// =====================================================
+// LIBRETA MILITAR: mostrar/ocultar según el radio button
 const seccionLibreta = document.getElementById("seccionLibretaMilitar");
 const radiosLibreta = document.querySelectorAll('input[name="tieneLibreta"]');
 
-// Escuchar cada vez que cambia la selección del radio button
 radiosLibreta.forEach(function(radio) {
   radio.addEventListener("change", function() {
     if (this.value === "si") {
-      // Si eligió "Sí", mostrar la sección de libreta militar
       seccionLibreta.classList.remove("hidden");
     } else {
-      // Si eligió "No", ocultar la sección y limpiar sus campos
       seccionLibreta.classList.add("hidden");
       document.getElementById("numeroLibreta").value = "";
       document.getElementById("distritoMilitar").value = "";
@@ -411,188 +363,174 @@ radiosLibreta.forEach(function(radio) {
   });
 });
 
-// =====================================================
-// PREVISUALIZACIÓN DE DATOS (enfoque data-driven)
-// =====================================================
-// Función auxiliar: obtiene el texto visible de un <select>
-function textoSelect(select) {
+// PREVISUALIZACIÓN: obtener texto visible de un select
+function obtenerTextSelect(select) {
   return select.selectedIndex > 0 ? select.options[select.selectedIndex].text : "---";
 }
 
-// Arreglo que define qué mostrar en la previsualización
-// Cada objeto tiene: idPreview (span destino) y valor (función que retorna el texto)
-const camposPreview = [
+// DEFINIR QUE SE MUESTRA EN LA PREVISUALIZACIÓN
+const datosPreview = [
   {
-    idPreview: "prevNombre",
+    id: "prevNombre",
     valor: function() {
-      return [
-        document.getElementById("primerApellido").value,
-        document.getElementById("segundoApellido").value,
-        document.getElementById("primerNombre").value,
-        document.getElementById("segundoNombre").value
-      ].filter(function(v) { return v.trim() !== ""; }).join(" ") || "---";
+      const p = document.getElementById("primerApellido").value;
+      const s = document.getElementById("segundoApellido").value;
+      const n = document.getElementById("primerNombre").value;
+      const sn = document.getElementById("segundoNombre").value;
+      return [p, s, n, sn].filter(x => x.trim()).join(" ") || "---";
     }
   },
   {
-    idPreview: "prevDocumento",
+    id: "prevDocumento",
     valor: function() {
-      var num = document.getElementById("numeroDocumento").value;
-      return num ? textoSelect(selectDoc) + " " + num : "---";
+      const num = document.getElementById("numeroDocumento").value;
+      return num ? obtenerTextSelect(selectDoc) + " " + num : "---";
     }
   },
   {
-    idPreview: "prevSexo",
-    valor: function() { return textoSelect(selectSexo); }
+    id: "prevSexo",
+    valor: function() { return obtenerTextSelect(selectSexo); }
   },
   {
-    idPreview: "prevFechaNac",
+    id: "prevFechaNac",
     valor: function() {
-      var raw = document.getElementById("fechaNacimiento").value;
+      const raw = document.getElementById("fechaNacimiento").value;
       if (!raw) return "---";
-      var p = raw.split("-");
+      const p = raw.split("-");
       return p[2] + "/" + p[1] + "/" + p[0];
     }
   },
   {
-    idPreview: "prevNacionalidad",
+    id: "prevNacionalidad",
     valor: function() {
-      var nac = textoSelect(selectNacionalidad);
+      const nac = obtenerTextSelect(selectNacionalidad);
       if (nac === "---") return "---";
-      var extra = selectNacionalidad.value === "extranjera" ? " - " + textoSelect(selectPais) : "";
+      const extra = selectNacionalidad.value === "extranjera" ? " - " + obtenerTextSelect(selectPais) : "";
       return nac + extra;
     }
   },
   {
-    idPreview: "prevLugarNac",
+    id: "prevLugarNac",
     valor: function() {
-      var partes = [textoSelect(selectPaisNac), textoSelect(selectDeptoNac), textoSelect(selectMunicipioNac)]
-        .filter(function(v) { return v !== "---"; });
+      const partes = [obtenerTextSelect(selectPaisNac), obtenerTextSelect(selectDeptoNac), obtenerTextSelect(selectMunicipioNac)]
+        .filter(x => x !== "---");
       return partes.length > 0 ? partes.join(", ") : "---";
     }
   },
   {
-    idPreview: "prevCelular",
+    id: "prevCelular",
     valor: function() { return document.getElementById("celular").value || "---"; }
   },
   {
-    idPreview: "prevEmail",
+    id: "prevEmail",
     valor: function() { return document.getElementById("email").value || "---"; }
   },
   {
-    idPreview: "prevDireccion",
+    id: "prevDireccion",
     valor: function() { return document.getElementById("direccionCorrespondencia").value || "---"; }
   },
   {
-    idPreview: "prevCorrespondencia",
+    id: "prevCorrespondencia",
     valor: function() {
-      var partes = [textoSelect(selectDeptoCorre), textoSelect(selectMunicipioCorr)]
-        .filter(function(v) { return v !== "---"; });
+      const partes = [obtenerTextSelect(selectPaisCorr), obtenerTextSelect(selectDeptoCorre), obtenerTextSelect(selectMunicipioCorr)]
+        .filter(x => x !== "---");
       return partes.length > 0 ? partes.join(", ") : "---";
     }
   }
 ];
 
-// Función que llena todos los campos de la previsualización
+// LLENAR LOS DATOS DE PREVISUALIZACIÓN
 function llenarPreview() {
-  camposPreview.forEach(function(campo) {
-    document.getElementById(campo.idPreview).textContent = campo.valor();
+  datosPreview.forEach(function(campo) {
+    document.getElementById(campo.id).textContent = campo.valor();
   });
 }
 
+// BOTONES DE PREVISUALIZACIÓN
 const panelPreview = document.getElementById("previewDatos");
-
-// Botón "Previsualizar" → solo muestra/oculta el panel
 const btnPreview = document.getElementById("btnPreview");
+const btnCorregir = document.getElementById("btnCorregir");
+const btnConfirmar = document.getElementById("btnConfirmar");
+
 btnPreview.addEventListener("click", function() {
   llenarPreview();
   panelPreview.classList.toggle("visible");
 });
 
-// Botón "Corregir datos" → cierra el panel y hace scroll al inicio del formulario
-const btnCorregir = document.getElementById("btnCorregir");
 btnCorregir.addEventListener("click", function() {
   panelPreview.classList.remove("visible");
   document.querySelector("form").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
-// Botón "Confirmar datos" → navega al paso 2
-const btnConfirmar = document.getElementById("btnConfirmar");
 btnConfirmar.addEventListener("click", function() {
   window.location.href = "formacion-academica.html";
 });
 
-// =====================================================
-// VALIDACIÓN DE CAMPOS OBLIGATORIOS
-// =====================================================
-// Lista de campos obligatorios: { id, tipo }
-// tipo: "input" (text/date/email/tel), "select", "radio"
+// VALIDACIÓN: campos obligatorios
 const camposObligatorios = [
-  { id: "primerApellido", tipo: "input" },
-  { id: "primerNombre", tipo: "input" },
-  { id: "tipoDocumento", tipo: "select" },
-  { id: "numeroDocumento", tipo: "input" },
-  { id: "sexo", tipo: "select" },
-  { id: "nacionalidad", tipo: "select" },
-  { id: "fechaNacimiento", tipo: "input" },
-  { id: "paisNacimiento", tipo: "select" },
-  { id: "departamentoNacimiento", tipo: "select" },
-  { id: "municipioNacimiento", tipo: "select" },
-  { id: "direccionCorrespondencia", tipo: "input" },
-  { id: "departamentoCorrespondencia", tipo: "select" },
-  { id: "municipioCorrespondencia", tipo: "select" },
-  { id: "celular", tipo: "input" },
-  { id: "email", tipo: "input" }
+  "primerApellido", "primerNombre", "tipoDocumento", "numeroDocumento",
+  "sexo", "nacionalidad", "fechaNacimiento", "paisNacimiento",
+  "departamentoNacimiento", "municipioNacimiento", "direccionCorrespondencia",
+  "paisCorrespondencia", "departamentoCorrespondencia", "municipioCorrespondencia",
+  "celular", "email"
 ];
 
-// Función que valida todos los campos obligatorios
-// Retorna true si todo está correcto, false si hay errores
+// FUNCIÓN PARA VALIDAR
 function validarFormulario() {
-  let esValido = true;
-
-  // Si la nacionalidad es extranjera, también validar el país de origen
+  let valido = true;
   const esExtranjera = selectNacionalidad.value === "extranjera";
 
-  camposObligatorios.forEach(function(campo) {
-    const elemento = document.getElementById(campo.id);
+  camposObligatorios.forEach(function(idCampo) {
+    const elemento = document.getElementById(idCampo);
+    if (!elemento) return;
+
     const grupo = elemento.closest(".form-group");
     const errorMsg = grupo ? grupo.querySelector(".error-msg") : null;
 
-    // Si es extranjera, omitir departamento y municipio de nacimiento (están ocultos)
-    if (esExtranjera && (campo.id === "departamentoNacimiento" || campo.id === "municipioNacimiento")) {
+    // Omitir departamento y municipio si es extranjero
+    if (esExtranjera && (idCampo === "departamentoNacimiento" || idCampo === "municipioNacimiento")) {
       elemento.classList.remove("error");
       if (errorMsg) errorMsg.style.display = "none";
-      return; // Saltar este campo
+      return;
     }
 
-    let vacio = false;
-    if (campo.tipo === "input") {
-      vacio = elemento.value.trim() === "";
-    } else if (campo.tipo === "select") {
-      vacio = elemento.value === "";
-    }
+    const vacio = elemento.value.trim() === "";
 
     if (vacio) {
-      // Marcar campo con error
       elemento.classList.add("error");
       if (errorMsg) errorMsg.style.display = "block";
-      esValido = false;
+      valido = false;
     } else {
-      // Limpiar error si el campo está lleno
       elemento.classList.remove("error");
       if (errorMsg) errorMsg.style.display = "none";
     }
   });
 
-  // Validar que la fecha de nacimiento sea de mayor de edad (18+)
+  // Validar país extranjero si aplica
+  if (esExtranjera) {
+    const grupo = selectPais.closest(".form-group");
+    const errorMsg = grupo ? grupo.querySelector(".error-msg") : null;
+    if (selectPais.value === "") {
+      selectPais.classList.add("error");
+      if (errorMsg) errorMsg.style.display = "block";
+      valido = false;
+    } else {
+      selectPais.classList.remove("error");
+      if (errorMsg) errorMsg.style.display = "none";
+    }
+  }
+
+  // Validar edad (mayor de 18)
   const inputFecha = document.getElementById("fechaNacimiento");
   const grupoFecha = inputFecha.closest(".form-group");
   const errorFecha = grupoFecha ? grupoFecha.querySelector(".error-msg") : null;
+
   if (inputFecha.value) {
     const nacimiento = new Date(inputFecha.value);
     const hoyVal = new Date();
     let edad = hoyVal.getFullYear() - nacimiento.getFullYear();
-    const mesDiff = hoyVal.getMonth() - nacimiento.getMonth();
-    if (mesDiff < 0 || (mesDiff === 0 && hoyVal.getDate() < nacimiento.getDate())) {
+    if (hoyVal.getMonth() < nacimiento.getMonth() ||
+        (hoyVal.getMonth() === nacimiento.getMonth() && hoyVal.getDate() < nacimiento.getDate())) {
       edad--;
     }
     if (edad < 18) {
@@ -601,30 +539,18 @@ function validarFormulario() {
         errorFecha.textContent = "Debe ser mayor de 18 años";
         errorFecha.style.display = "block";
       }
-      esValido = false;
+      valido = false;
     }
   }
 
-  // Validar país extranjero solo si eligió nacionalidad extranjera
-  if (esExtranjera) {
-    const errorPais = selectPais.closest(".form-group").querySelector(".error-msg");
-    if (selectPais.value === "") {
-      selectPais.classList.add("error");
-      if (errorPais) errorPais.style.display = "block";
-      esValido = false;
-    } else {
-      selectPais.classList.remove("error");
-      if (errorPais) errorPais.style.display = "none";
-    }
-  }
-
-  return esValido;
+  return valido;
 }
 
-// Limpiar error de un campo cuando el usuario lo modifica
-camposObligatorios.forEach(function(campo) {
-  const elemento = document.getElementById(campo.id);
-  const evento = campo.tipo === "select" ? "change" : "input";
+// LIMPIAR ERROR cuando el usuario modifica un campo
+camposObligatorios.forEach(function(idCampo) {
+  const elemento = document.getElementById(idCampo);
+  if (!elemento) return;
+  const evento = elemento.tagName === "SELECT" ? "change" : "input";
   elemento.addEventListener(evento, function() {
     const grupo = this.closest(".form-group");
     const errorMsg = grupo ? grupo.querySelector(".error-msg") : null;
@@ -633,18 +559,15 @@ camposObligatorios.forEach(function(campo) {
   });
 });
 
-// Botón "Siguiente" → validar antes de navegar al paso 2
-// Si la validación es correcta, muestra la previsualización para confirmación
+// BOTÓN SIGUIENTE: validar antes de continuar
 const btnSiguiente = document.getElementById("btnSiguiente");
 btnSiguiente.addEventListener("click", function() {
   if (validarFormulario()) {
-    // Validación OK → avisar al usuario y mostrar previsualización
     alert("A continuación se mostrará la previsualización de sus datos.\nPor favor verifique que la información sea correcta antes de continuar a la siguiente sección.");
     llenarPreview();
     panelPreview.classList.add("visible");
     panelPreview.scrollIntoView({ behavior: "smooth", block: "center" });
   } else {
-    // Hacer scroll al primer campo con error
     const primerError = document.querySelector(".form-group .error");
     if (primerError) {
       primerError.scrollIntoView({ behavior: "smooth", block: "center" });
