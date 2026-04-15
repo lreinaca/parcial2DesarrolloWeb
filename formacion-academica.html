@@ -177,7 +177,7 @@
         - <div class="records-empty"> se muestra cuando no hay registros
       -->
       <!-- Sección: Educación Superior (dinámica) -->
-      <section>
+      <section id="seccionEducacionSuperior">
         <h2 class="section-title">
           <span class="icon">🏛️</span> Educación Superior
         </h2>
@@ -207,7 +207,7 @@
             <div class="form-group">
               <label for="semestresAprobados">N° Semestres Aprobados <span class="required-mark">*</span></label>
               <input type="number" id="semestresAprobados" name="semestresAprobados"
-                     placeholder="Ej: 10" min="1" max="20" inputmode="numeric">
+                     placeholder="Ej: 10" min="1" max="12" inputmode="numeric">
               <span class="error-msg">Ingrese los semestres aprobados</span>
             </div>
             <div class="form-group">
@@ -223,7 +223,7 @@
           <div class="form-grid cols-2 mt-2">
             <div class="form-group">
               <label for="institucionEducativa">Nombre de la Institución <span class="required-mark">*</span></label>
-              <select>
+              <select id="institucionEducativa" name="institucionEducativa">
                 <option value="">-- Seleccione --</option>
                 <option value="universidad_nacional">Universidad Nacional</option>
                 <option value="universidad_de_america">Universidad de América</option>
@@ -248,12 +248,12 @@
           </div>
 
           <div class="form-grid cols-3 mt-2">
-            <div class="form-group">
+            <div class="form-group" id="grupoFechaTerminacion">
               <label for="fechaTerminacion">Fecha de Terminación</label>
               <input type="date" id="fechaTerminacion" name="fechaTerminacion"
                      min="1960-01-01" max="2026-12-31">
             </div>
-            <div class="form-group">
+            <div class="form-group" id="grupoTarjetaProfesional">
               <label for="tarjetaProfesional">N° Tarjeta Profesional</label>
               <input type="text" id="tarjetaProfesional" name="tarjetaProfesional"
                      placeholder="Si aplica" maxlength="30">
@@ -333,6 +333,8 @@
                 <option value="arabe">Árabe</option>
                 <option value="otro">Otro</option>
               </select>
+              <input type="text" id="otroIdioma" name="otroIdioma"
+                     placeholder="Ingrese el idioma" maxlength="40" class="hidden">
               <span class="error-msg">Seleccione un idioma</span>
             </div>
             <div class="form-group">
@@ -419,6 +421,10 @@
             <span class="preview-value" id="prevTotalIdiomas">0</span>
           </div>
         </div>
+        <div class="preview-actions">
+          <button type="button" class="btn btn-secondary" id="btnCorregir">✏️ Corregir datos</button>
+          <button type="button" class="btn btn-primary" id="btnConfirmar">✅ Datos correctos, continuar</button>
+        </div>
       </div>
 
       <!--
@@ -432,9 +438,9 @@
         </button>
         <div class="btn-group">
           <a href="datos-personales.html" class="btn btn-secondary">← Anterior</a>
-          <a href="experiencia-laboral.html" class="btn btn-primary">
+          <button type="button" class="btn btn-primary" id="btnSiguiente">
             Siguiente: Experiencia Laboral →
-          </a>
+          </button>
         </div>
       </div>
 

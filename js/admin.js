@@ -4,6 +4,7 @@
 const hojasDeVida = [
   {
     id: 1,
+    usuario: "jgarcia",
     primerNombre: "Juan",
     segundoNombre: "Carlos",
     primerApellido: "García",
@@ -31,6 +32,7 @@ const hojasDeVida = [
   },
   {
     id: 2,
+    usuario: "mrodriguez",
     primerNombre: "María",
     segundoNombre: "Fernanda",
     primerApellido: "Rodríguez",
@@ -58,6 +60,7 @@ const hojasDeVida = [
   },
   {
     id: 3,
+    usuario: "cmartinez",
     primerNombre: "Carlos",
     segundoNombre: "Andrés",
     primerApellido: "Martínez",
@@ -85,6 +88,7 @@ const hojasDeVida = [
   },
   {
     id: 4,
+    usuario: "ltorres",
     primerNombre: "Laura",
     segundoNombre: "Sofía",
     primerApellido: "Torres",
@@ -147,6 +151,7 @@ function renderTabla(lista) {
     const tr = document.createElement("tr");
     tr.innerHTML =
       "<td>" + (index + 1) + "</td>" +
+      "<td>" + hv.usuario + "</td>" +
       "<td>" + nombreCompleto(hv) + "</td>" +
       "<td>" + hv.tipoDocumento.split(" ")[0] + " " + hv.numeroDocumento + "</td>" +
       "<td>" + hv.email + "</td>" +
@@ -241,20 +246,42 @@ btnCerrar.addEventListener("click", function() {
 });
 
 // =====================================================
-// EVENTO: buscar/filtrar hojas de vida por nombre o documento
+// FILTRO COMBINADO: por estado + por texto de búsqueda
 // =====================================================
+var filtroEstadoActual = "todas"; // Estado activo del filtro
+
+// Función que aplica ambos filtros (estado + texto) y re-renderiza
+function aplicarFiltros() {
+  var texto = inputBuscar ? inputBuscar.value.toLowerCase().trim() : "";
+  var filtradas = hojasDeVida.filter(function(hv) {
+    // Filtro por estado
+    var coincideEstado = filtroEstadoActual === "todas" || hv.estado === filtroEstadoActual;
+    // Filtro por texto
+    var coincideTexto = texto === "" ||
+      nombreCompleto(hv).toLowerCase().indexOf(texto) !== -1 ||
+      hv.numeroDocumento.toLowerCase().indexOf(texto) !== -1 ||
+      hv.email.toLowerCase().indexOf(texto) !== -1;
+    return coincideEstado && coincideTexto;
+  });
+  renderTabla(filtradas);
+}
+
+// Botones de filtro por estado
+var botonesFiltr = document.querySelectorAll(".filter-btn");
+botonesFiltr.forEach(function(btn) {
+  btn.addEventListener("click", function() {
+    // Alternar clase .active
+    botonesFiltr.forEach(function(b) { b.classList.remove("active"); });
+    this.classList.add("active");
+    // Actualizar filtro y re-renderizar
+    filtroEstadoActual = this.dataset.filter;
+    aplicarFiltros();
+  });
+});
+
+// Buscar por texto (combinado con el filtro de estado)
 if (inputBuscar) {
   inputBuscar.addEventListener("input", function() {
-    var texto = this.value.toLowerCase().trim();
-    if (texto === "") {
-      renderTabla(hojasDeVida);
-      return;
-    }
-    var filtradas = hojasDeVida.filter(function(hv) {
-      return nombreCompleto(hv).toLowerCase().indexOf(texto) !== -1 ||
-             hv.numeroDocumento.toLowerCase().indexOf(texto) !== -1 ||
-             hv.email.toLowerCase().indexOf(texto) !== -1;
-    });
-    renderTabla(filtradas);
+    aplicarFiltros();
   });
 }

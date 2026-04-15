@@ -3,16 +3,11 @@
 // =====================================================
 // Maneja dinámicamente:
 // 1. Calcular tiempo total de experiencia
-// 2. Agregar/eliminar detalles de experiencia por ocupación
-// 3. Carga dinámica de países, departamentos y municipios
-// 4. Previsualización
+// 2. Previsualización
 
 // =====================================================
 // REFERENCIAS AL DOM
 // =====================================================
-const btnAgregarDetalle = document.getElementById("btnAgregarDetalle");
-const tablaDetalleExp = document.querySelector("#tablaDetalleExp tbody");
-const emptyDetalleExp = document.getElementById("emptyDetalleExp");
 const btnPreview = document.getElementById("btnPreview");
 const panelPreview = document.getElementById("previewTiempo");
 
@@ -24,7 +19,6 @@ const tiempoTotalField = document.getElementById("tiempoTotal");
 
 // Arreglos para almacenar datos
 let experienciasLaboral = [];
-let detallesExperiencia = [];
 
 // =====================================================
 // FUNCIÓN: Cargar experiencias del paso 3 y datos dinámicos
@@ -36,29 +30,10 @@ function cargarExperienciasDelPaso3() {
     experienciasLaboral = JSON.parse(expGuardadas);
     calcularTiempoTotal();
   }
-
-  // ===================================================
-  // CARGAR SELECTES DE PAÍS, DEPARTAMENTO Y MUNICIPIO
-  // ===================================================
-  // Los utilizamos en la sección "Detalle de Experiencia por Ocupación"
-  // para permitir agregar registros con información geográfica específica
-
-  // Listar países principales (similar a experiencia-laboral)
-  const paisesDetalle = [
-    { valor: "colombia", nombre: "Colombia" },
-    { valor: "venezuela", nombre: "Venezuela" },
-    { valor: "ecuador", nombre: "Ecuador" },
-    { valor: "peru", nombre: "Perú" },
-    { valor: "brasil", nombre: "Brasil" },
-    { valor: "mexico", nombre: "México" },
-    { valor: "estados_unidos", nombre: "Estados Unidos" },
-    { valor: "espana", nombre: "España" },
-    { valor: "otro", nombre: "Otro" }
-  ];
-
-  // Nota: Si existieran selectes de país/depto/municipio en esta página,
-  // aquí se cargarían. Por ahora, la funcionalidad está en experiencia-laboral.js
 }
+
+// Ejecutar al cargar la página
+window.addEventListener("load", cargarExperienciasDelPaso3);
 
 
 // =====================================================
@@ -133,134 +108,40 @@ function calcularTiempoTotal() {
 }
 
 // =====================================================
-// FUNCIÓN: Agregar Detalle de Experiencia
+// PREVISUALIZACIÓN: llenar datos
 // =====================================================
-btnAgregarDetalle.addEventListener("click", function() {
-  const ocupacion = document.getElementById("ocupacion").value.trim();
-  const sector = document.getElementById("sectorDetalle").value;
-  const empresa = document.getElementById("empresaDetalle").value.trim();
-  const fechaInicio = document.getElementById("fechaInicioDetalle").value;
-  const fechaFin = document.getElementById("fechaFinDetalle").value;
-
-  // Obtener texto del sector
-  const textoSector = document.getElementById("sectorDetalle").options[document.getElementById("sectorDetalle").selectedIndex].text;
-
-  // Validar campos obligatorios
-  if (!ocupacion || !sector || !empresa || !fechaInicio) {
-    alert("⚠️ Complete todos los campos obligatorios del detalle.");
-    return;
-  }
-
-  // Calcular tiempo
-  const tiempo = calcularTiempoAñosMeses(fechaInicio, fechaFin);
-  const tiempoTexto = `${tiempo.años} años, ${tiempo.meses} meses`;
-
-  // Crear objeto de detalle
-  const nuevoDetalle = {
-    id: Date.now(),
-    ocupacion: ocupacion,
-    sector: textoSector,
-    empresa: empresa,
-    fechaInicio: fechaInicio,
-    fechaFin: fechaFin || "Actual",
-    tiempo: tiempoTexto
-  };
-
-  // Agregar al arreglo
-  detallesExperiencia.push(nuevoDetalle);
-
-  // Agregar fila a tabla
-  agregarFilaDetalle(nuevoDetalle);
-
-  // Limpiar campos
-  document.getElementById("ocupacion").value = "";
-  document.getElementById("sectorDetalle").value = "";
-  document.getElementById("empresaDetalle").value = "";
-  document.getElementById("fechaInicioDetalle").value = "";
-  document.getElementById("fechaFinDetalle").value = "";
-  document.getElementById("tiempoCalculado").value = "--";
-
-  // Actualizar tabla
-  actualizarTablaDetalles();
-});
-
-// =====================================================
-// EVENTO: Calcular tiempo en tiempo real
-// =====================================================
-document.getElementById("fechaInicioDetalle").addEventListener("change", calcularTiempoDetalle);
-document.getElementById("fechaFinDetalle").addEventListener("change", calcularTiempoDetalle);
-
-function calcularTiempoDetalle() {
-  const fechaInicio = document.getElementById("fechaInicioDetalle").value;
-  if (!fechaInicio) return;
-
-  const fechaFin = document.getElementById("fechaFinDetalle").value;
-  const tiempo = calcularTiempoAñosMeses(fechaInicio, fechaFin);
-  document.getElementById("tiempoCalculado").value = `${tiempo.años} años, ${tiempo.meses} meses`;
+function llenarPreview() {
+  calcularTiempoTotal();
 }
 
-// =====================================================
-// FUNCIÓN: Agregar fila a tabla de detalles
-// =====================================================
-function agregarFilaDetalle(detalle) {
-  const fila = document.createElement("tr");
-  fila.dataset.id = detalle.id;
-  fila.innerHTML =
-    `<td>${detallesExperiencia.length}</td>` +
-    `<td>${detalle.ocupacion}</td>` +
-    `<td>${detalle.empresa}</td>` +
-    `<td>${detalle.sector}</td>` +
-    `<td>${detalle.fechaInicio}</td>` +
-    `<td>${detalle.fechaFin}</td>` +
-    `<td>${detalle.tiempo}</td>` +
-    `<td>
-      <button type="button" class="btn btn-danger btn-sm btn-eliminar-detalle" data-id="${detalle.id}">
-        🗑️ Eliminar
-      </button>
-    </td>`;
-
-  tablaDetalleExp.appendChild(fila);
-}
-
-// =====================================================
-// FUNCIÓN: Actualizar tabla de detalles
-// =====================================================
-function actualizarTablaDetalles() {
-  emptyDetalleExp.style.display = detallesExperiencia.length === 0 ? "block" : "none";
-  const filas = tablaDetalleExp.querySelectorAll("tr");
-  filas.forEach((fila, index) => {
-    fila.cells[0].textContent = index + 1;
-  });
-}
-
-// =====================================================
-// EVENTO: Eliminar detalle (delegación)
-// =====================================================
-tablaDetalleExp.addEventListener("click", function(e) {
-  if (e.target.closest(".btn-eliminar-detalle")) {
-    const id = parseInt(e.target.closest(".btn-eliminar-detalle").dataset.id);
-    detallesExperiencia = detallesExperiencia.filter(d => d.id !== id);
-    document.querySelector(`tr[data-id="${id}"]`).remove();
-    actualizarTablaDetalles();
-  }
-});
-
-// =====================================================
-// PREVISUALIZACIÓN
-// =====================================================
 btnPreview.addEventListener("click", function() {
+  llenarPreview();
   panelPreview.classList.toggle("visible");
 });
 
 // =====================================================
-// VALIDACIÓN ANTES DE AVANZAR AL PASO 5
+// BOTONES DE PREVISUALIZACIÓN: Corregir y Confirmar
 // =====================================================
-const btnSiguiente = document.querySelector(".form-actions .btn-primary");
-btnSiguiente.addEventListener("click", function(e) {
-  // Guardar detalles en sessionStorage para paso 5
-  sessionStorage.setItem("tiempoExperiencia", tiempoTotalField.value);
-  sessionStorage.setItem("detallesExperiencia", JSON.stringify(detallesExperiencia));
+const btnCorregir = document.getElementById("btnCorregir");
+const btnConfirmar = document.getElementById("btnConfirmar");
 
-  alert("✅ Tiempo de experiencia registrado correctamente.\nContinuando al siguiente paso...");
+btnCorregir.addEventListener("click", function() {
+  panelPreview.classList.remove("visible");
+  document.querySelector("form").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+btnConfirmar.addEventListener("click", function() {
+  sessionStorage.setItem("tiempoExperiencia", tiempoTotalField.value);
   window.location.href = "certificacion.html";
+});
+
+// =====================================================
+// BOTÓN SIGUIENTE: validar → alert → previsualización
+// =====================================================
+const btnSiguiente = document.getElementById("btnSiguiente");
+btnSiguiente.addEventListener("click", function() {
+  alert("A continuación se mostrará la previsualización de sus datos.\nPor favor verifique que la información sea correcta antes de continuar a la siguiente sección.");
+  llenarPreview();
+  panelPreview.classList.add("visible");
+  panelPreview.scrollIntoView({ behavior: "smooth", block: "center" });
 });

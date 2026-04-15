@@ -48,8 +48,34 @@ window.addEventListener("load", function() {
   cargarOpcionesSelect(selectDeptoEmpresa, DEPARTAMENTOS_COLOMBIA, true);
 
   // Conectar cambios: País → Departamentos → Municipios
-  conectarPaisADepartamentos(selectPaisEmpresa, selectDeptoEmpresa);
+  conectarPaisADepartamentos(selectPaisEmpresa, selectDeptoEmpresa, selectMunicipioEmpresa);
   conectarDeptoAMunicipios(selectDeptoEmpresa, selectMunicipioEmpresa);
+
+  // VALIDACIÓN EN TIEMPO REAL: Teléfono empresa (solo 10 dígitos numéricos)
+  validarCelular("telefonoEmpresa");
+
+  // VALIDACIÓN EN TIEMPO REAL: Correo de la entidad
+  validarCorreo("emailEmpresa");
+
+  // FECHA MÁXIMA: No permitir fechas futuras
+  const hoyISO = new Date().toISOString().split("T")[0];
+  document.getElementById("fechaIngreso").setAttribute("max", hoyISO);
+  document.getElementById("fechaRetiro").setAttribute("max", hoyISO);
+
+  // EMPLEO ACTUAL: mostrar/ocultar fecha de retiro
+  const selectEmpleoActual = document.getElementById("empleoActual");
+  const grupoFechaRetiro = document.getElementById("grupoFechaRetiro");
+
+  selectEmpleoActual.addEventListener("change", function() {
+    if (this.value === "si") {
+      grupoFechaRetiro.classList.add("hidden");
+      document.getElementById("fechaRetiro").value = "";
+    } else if (this.value === "no") {
+      grupoFechaRetiro.classList.remove("hidden");
+    } else {
+      grupoFechaRetiro.classList.remove("hidden");
+    }
+  });
 });
 
 // =====================================================
@@ -66,6 +92,7 @@ btnAgregarExperiencia.addEventListener("click", function() {
   const telefono = document.getElementById("telefonoEmpresa").value.trim();
   const direccion = document.getElementById("direccionEmpresa").value.trim();
   const fechaIngreso = document.getElementById("fechaIngreso").value;
+  const empleoActual = document.getElementById("empleoActual").value;
   const fechaRetiro = document.getElementById("fechaRetiro").value;
   const cargo = document.getElementById("cargoExperiencia").value.trim();
   const dependencia = document.getElementById("dependencia").value.trim();
@@ -75,9 +102,24 @@ btnAgregarExperiencia.addEventListener("click", function() {
   const textoDepto = selectDeptoEmpresa.options[selectDeptoEmpresa.selectedIndex].text;
   const textoTipo = document.getElementById("tipoEmpresa").options[document.getElementById("tipoEmpresa").selectedIndex].text;
 
-  // Validar campos obligatorios
-  if (!empresa || !tipoEmpresa || !pais || !departamento || !municipio || !fechaIngreso || !cargo) {
+  // Validar campos obligatorios (municipio solo si no está inhabilitado)
+  const municipioDisabled = document.getElementById("municipioEmpresa").disabled;
+  if (!empresa || !tipoEmpresa || !pais || !fechaIngreso || !empleoActual || !cargo) {
     alert("⚠️ Complete todos los campos obligatorios.");
+    return;
+  }
+  if (!municipioDisabled && !departamento) {
+    alert("⚠️ Seleccione un departamento.");
+    return;
+  }
+  if (!municipioDisabled && !municipio) {
+    alert("⚠️ Seleccione un municipio.");
+    return;
+  }
+
+  // Si no es empleo actual, la fecha de retiro es obligatoria
+  if (empleoActual === "no" && !fechaRetiro) {
+    alert("⚠️ Debe ingresar la fecha de retiro.");
     return;
   }
 
@@ -120,7 +162,9 @@ btnAgregarExperiencia.addEventListener("click", function() {
   document.getElementById("telefonoEmpresa").value = "";
   document.getElementById("direccionEmpresa").value = "";
   document.getElementById("fechaIngreso").value = "";
+  document.getElementById("empleoActual").value = "";
   document.getElementById("fechaRetiro").value = "";
+  document.getElementById("grupoFechaRetiro").classList.remove("hidden");
   document.getElementById("cargoExperiencia").value = "";
   document.getElementById("dependencia").value = "";
 
@@ -181,26 +225,57 @@ tablaExperiencias.addEventListener("click", function(e) {
 });
 
 // =====================================================
-// PREVISUALIZACIÓN
+// PREVISUALIZACIÓN: llenar datos
 // =====================================================
+function llenarPreview() {
+  const expPublica = experienciasRegistradas.filter(e => e.tipo === "Pública").length;
+  const expPrivada = experienciasRegistradas.filter(e => e.tipo === "Privada").length;
+  const expIndependiente = experienciasRegistradas.filter(e => e.tipo === "Independiente").length;
+  document.getElementById("prevTotalExp").textContent = experienciasRegistradas.length;
+  document.getElementById("prevExpPublica").textContent = expPublica;
+  document.getElementById("prevExpPrivada").textContent = expPrivada;
+  document.getElementById("prevExpIndependiente").textContent = expIndependiente;
+}
+
 btnPreview.addEventListener("click", function() {
+  llenarPreview();
   panelPreview.classList.toggle("visible");
 });
 
 // =====================================================
-// VALIDACIÓN ANTES DE AVANZAR AL PASO 4
+// BOTONES DE PREVISUALIZACIÓN: Corregir y Confirmar
 // =====================================================
-const btnSiguiente = document.querySelector(".form-actions .btn-primary");
-btnSiguiente.addEventListener("click", function(e) {
+const btnCorregir = document.getElementById("btnCorregir");
+const btnConfirmar = document.getElementById("btnConfirmar");
+
+btnCorregir.addEventListener("click", function() {
+  panelPreview.classList.remove("visible");
+  document.querySelector("form").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+btnConfirmar.addEventListener("click", function() {
+  if (experienciasRegistradas.length === 0) {
+    alert("⚠️ Debe agregar al menos una experiencia laboral antes de continuar.");
+    panelPreview.classList.remove("visible");
+    return;
+  }
+  sessionStorage.setItem("experienciasLaboral", JSON.stringify(experienciasRegistradas));
+  window.location.href = "tiempo-experiencia.html";
+});
+
+// =====================================================
+// BOTÓN SIGUIENTE: validar → alert → previsualización
+// =====================================================
+const btnSiguiente = document.getElementById("btnSiguiente");
+btnSiguiente.addEventListener("click", function() {
   if (experienciasRegistradas.length === 0) {
     alert("⚠️ Debe agregar al menos una experiencia laboral antes de continuar.");
     return;
   }
 
-  // Guardar experiencias en sessionStorage para paso 4
-  sessionStorage.setItem("experienciasLaboral", JSON.stringify(experienciasRegistradas));
-
-  alert("✅ Experiencia laboral registrada correctamente.\nContinuando al siguiente paso...");
-  window.location.href = "tiempo-experiencia.html";
+  alert("A continuación se mostrará la previsualización de sus datos.\nPor favor verifique que la información sea correcta antes de continuar a la siguiente sección.");
+  llenarPreview();
+  panelPreview.classList.add("visible");
+  panelPreview.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 

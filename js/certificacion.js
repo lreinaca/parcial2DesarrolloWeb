@@ -42,7 +42,30 @@ function llenarPreviewResumen() {
 // FUNCIÓN: Mostrar/Ocultar previsualización
 // =====================================================
 btnPreview.addEventListener("click", function() {
+  llenarPreviewResumen();
   panelPreview.classList.toggle("visible");
+});
+
+// =====================================================
+// BOTONES DE PREVISUALIZACIÓN: Corregir y Confirmar
+// =====================================================
+const btnCorregir = document.getElementById("btnCorregir");
+const btnConfirmar = document.getElementById("btnConfirmar");
+
+btnCorregir.addEventListener("click", function() {
+  panelPreview.classList.remove("visible");
+  document.querySelector("form").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+btnConfirmar.addEventListener("click", function() {
+  if (!validarFormularioCertificacion()) {
+    panelPreview.classList.remove("visible");
+    return;
+  }
+
+  alert("✅ ¡Hoja de Vida enviada correctamente!\n\nLa información ha sido registrada en el sistema.\nEl administrador revisará su solicitud pronto.\n\nEstado: Diligenciada ⏳");
+  sessionStorage.clear();
+  window.location.href = "index.html";
 });
 
 // =====================================================
@@ -113,19 +136,16 @@ const btnEnviar = document.querySelector('button[type="submit"]');
 btnEnviar.addEventListener("click", function(e) {
   e.preventDefault();
 
-  // Validar antes de enviar
+  // Validar antes de mostrar previsualización
   if (!validarFormularioCertificacion()) {
     return;
   }
 
-  // Si las validaciones pasaron
-  alert("✅ ¡Hoja de Vida enviada correctamente!\n\nLa información ha sido registrada en el sistema.\nEl administrador revisará su solicitud pronto.\n\nEstado: Diligenciada ⏳");
-
-  // Limpiar sessionStorage
-  sessionStorage.clear();
-
-  // Redirigir al login
-  window.location.href = "index.html";
+  // Si las validaciones pasaron, mostrar previsualización
+  alert("A continuación se mostrará la previsualización de sus datos.\nPor favor verifique que la información sea correcta antes de enviar.");
+  llenarPreviewResumen();
+  panelPreview.classList.add("visible");
+  panelPreview.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 
 // =====================================================

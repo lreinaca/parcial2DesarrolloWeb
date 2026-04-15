@@ -199,8 +199,9 @@
             </div>
             <div class="form-group">
               <label for="municipioEmpresa">Municipio <span class="required-mark">*</span></label>
-              <input type="text" id="municipioEmpresa" name="municipioEmpresa"
-                     placeholder="Ej: Bogotá" maxlength="60">
+              <select id="municipioEmpresa" name="municipioEmpresa">
+                <option value="">-- Primero seleccione un departamento --</option>
+              </select>
             </div>
           </div>
 
@@ -209,12 +210,14 @@
               <label for="emailEmpresa">Correo de la Entidad</label>
               <input type="email" id="emailEmpresa" name="emailEmpresa"
                      placeholder="Ej: contacto@empresa.com" maxlength="80">
+              <span class="error-msg">Ingrese un correo válido</span>
             </div>
             <div class="form-group">
               <label for="telefonoEmpresa">Teléfono de la Entidad</label>
               <input type="tel" id="telefonoEmpresa" name="telefonoEmpresa"
                      placeholder="Ej: 6011234567" maxlength="15"
                      pattern="[0-9]+" inputmode="tel" title="Solo números">
+              <span class="error-msg">Ingrese un teléfono válido (10 dígitos)</span>
             </div>
             <div class="form-group">
               <label for="direccionEmpresa">Dirección de la Entidad</label>
@@ -227,15 +230,25 @@
             <div class="form-group">
               <label for="fechaIngreso">Fecha de Ingreso <span class="required-mark">*</span></label>
               <input type="date" id="fechaIngreso" name="fechaIngreso"
-                     min="1960-01-01" max="2026-12-31">
+                     min="1960-01-01">
               <span class="error-msg">Seleccione la fecha de ingreso</span>
             </div>
             <div class="form-group">
-              <label for="fechaRetiro">Fecha de Retiro</label>
-              <input type="date" id="fechaRetiro" name="fechaRetiro"
-                     min="1960-01-01" max="2026-12-31">
-              <span class="hint">Deje en blanco si es el empleo actual</span>
+              <label for="empleoActual">¿Trabaja actualmente aquí? <span class="required-mark">*</span></label>
+              <select id="empleoActual" name="empleoActual">
+                <option value="">-- Seleccione --</option>
+                <option value="si">Sí</option>
+                <option value="no">No</option>
+              </select>
             </div>
+            <div class="form-group" id="grupoFechaRetiro">
+              <label for="fechaRetiro">Fecha de Retiro <span class="required-mark">*</span></label>
+              <input type="date" id="fechaRetiro" name="fechaRetiro"
+                     min="1960-01-01">
+            </div>
+          </div>
+
+          <div class="form-grid cols-3 mt-2">
             <div class="form-group">
               <label for="cargoExperiencia">Cargo <span class="required-mark">*</span></label>
               <input type="text" id="cargoExperiencia" name="cargoExperiencia"
@@ -305,6 +318,14 @@
             <span class="preview-label">Sector Privado</span>
             <span class="preview-value" id="prevExpPrivada">0</span>
           </div>
+          <div class="preview-item">
+            <span class="preview-label">Independiente</span>
+            <span class="preview-value" id="prevExpIndependiente">0</span>
+          </div>
+        </div>
+        <div class="preview-actions">
+          <button type="button" class="btn btn-secondary" id="btnCorregir">✏️ Corregir datos</button>
+          <button type="button" class="btn btn-primary" id="btnConfirmar">✅ Datos correctos, continuar</button>
         </div>
       </div>
 
@@ -318,9 +339,9 @@
         </button>
         <div class="btn-group">
           <a href="formacion-academica.html" class="btn btn-secondary">← Anterior</a>
-          <a href="tiempo-experiencia.html" class="btn btn-primary">
+          <button type="button" class="btn btn-primary" id="btnSiguiente">
             Siguiente: Tiempo de Experiencia →
-          </a>
+          </button>
         </div>
       </div>
 

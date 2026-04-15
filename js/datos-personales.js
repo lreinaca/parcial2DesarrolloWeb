@@ -194,37 +194,25 @@ agregarOpciones(selectDeptoNac, departamentos);
 // DEPARTAMENTOS DE CORRESPONDENCIA
 agregarOpciones(selectDeptoCorre, departamentos);
 
-// PAÍS DE CORRESPONDENCIA: ahora permite cambiar de país
-function cargarPaisesCorrespondencia() {
-  selectPaisCorr.innerHTML = '<option value="">-- Seleccione --</option>';
-  const optionCol = document.createElement("option");
-  optionCol.value = "colombia";
-  optionCol.textContent = "Colombia";
-  optionCol.selected = true;
-  selectPaisCorr.appendChild(optionCol);
-  agregarOpciones(selectPaisCorr, paises);
-}
-cargarPaisesCorrespondencia();
-
-// CUANDO CAMBIA EL PAÍS DE CORRESPONDENCIA
-selectPaisCorr.addEventListener("change", function() {
-  selectDeptoCorre.innerHTML = '<option value="">-- Seleccione --</option>';
-  selectMunicipioCorr.innerHTML = '<option value="">-- Seleccione --</option>';
-
-  if (this.value === "colombia") {
-    // Si selecciona Colombia, mostrar departamentos y municipios
-    agregarOpciones(selectDeptoCorre, departamentos);
-  } else if (this.value !== "") {
-    // Si selecciona otro país, no mostrar departamentos (no aplica)
-    selectDeptoCorre.parentElement.style.display = "none";
-    selectMunicipioCorr.parentElement.style.display = "none";
-  }
-});
+// PAÍS DE CORRESPONDENCIA: fijo en Colombia (no editable)
+selectPaisCorr.innerHTML = "";
+const optionColCorr = document.createElement("option");
+optionColCorr.value = "colombia";
+optionColCorr.textContent = "Colombia";
+optionColCorr.selected = true;
+selectPaisCorr.appendChild(optionColCorr);
+selectPaisCorr.disabled = true;
 
 // CUANDO CAMBIA EL DEPARTAMENTO DE CORRESPONDENCIA
 selectDeptoCorre.addEventListener("change", function() {
   cargarMunicipios(selectMunicipioCorr, this.value);
 });
+
+// VALIDACIÓN EN TIEMPO REAL: Celular (solo 10 dígitos numéricos)
+validarCelular("celular");
+
+// VALIDACIÓN EN TIEMPO REAL: Correo electrónico
+validarCorreo("email");
 
 // TIPO DE DOCUMENTO DEFINE LA NACIONALIDAD
 const selectNacionalidad = document.getElementById("nacionalidad");
@@ -463,7 +451,16 @@ btnCorregir.addEventListener("click", function() {
 });
 
 btnConfirmar.addEventListener("click", function() {
-  window.location.href = "formacion-academica.html";
+  if (validarFormulario()) {
+    window.location.href = "formacion-academica.html";
+  } else {
+    // Cerrar preview y hacer scroll al primer error
+    panelPreview.classList.remove("visible");
+    var primerError = document.querySelector(".form-group .error");
+    if (primerError) {
+      primerError.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
 });
 
 // VALIDACIÓN: campos obligatorios

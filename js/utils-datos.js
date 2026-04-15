@@ -206,21 +206,33 @@ function cargarMunicipiosPorDepto(selectMunicipio, departamentoValor) {
  * @example
  * conectarPaisADepartamentos(selectPaisEmpresa, selectDeptoEmpresa);
  */
-function conectarPaisADepartamentos(selectPais, selectDepto) {
+function conectarPaisADepartamentos(selectPais, selectDepto, selectMunicipio) {
   // Escuchar cambios en el select de país
   selectPais.addEventListener("change", function() {
     if (this.value === "colombia") {
       // Si selecciona Colombia, cargar sus departamentos
       cargarOpcionesSelect(selectDepto, DEPARTAMENTOS_COLOMBIA, true, "-- Seleccione Departamento --");
       selectDepto.disabled = false;
+      if (selectMunicipio) {
+        selectMunicipio.innerHTML = '<option value="">-- Primero seleccione un departamento --</option>';
+        selectMunicipio.disabled = false;
+      }
     } else if (this.value !== "") {
       // Si selecciona otro país, mostrar mensaje y deshabilitar
       selectDepto.innerHTML = '<option value="">-- Este país usa divisiones administrativas diferentes --</option>';
       selectDepto.disabled = true;
+      if (selectMunicipio) {
+        selectMunicipio.innerHTML = '<option value="">-- No disponible --</option>';
+        selectMunicipio.disabled = true;
+      }
     } else {
       // Si no selecciona nada, limpiar
       selectDepto.innerHTML = '<option value="">-- Primero seleccione un país --</option>';
       selectDepto.disabled = false;
+      if (selectMunicipio) {
+        selectMunicipio.innerHTML = '<option value="">-- Primero seleccione un departamento --</option>';
+        selectMunicipio.disabled = false;
+      }
     }
   });
 }
@@ -248,6 +260,110 @@ function conectarDeptoAMunicipios(selectDepto, selectMunicipio) {
       // Si no selecciona nada, mostrar placeholder
       selectMunicipio.innerHTML = '<option value="">-- Primero seleccione un departamento --</option>';
       selectMunicipio.disabled = true;
+    }
+  });
+}
+
+// =====================================================
+// FUNCIÓN REUTILIZABLE: Validar campo de celular
+// =====================================================
+/**
+ * Aplica validación en tiempo real a un campo de celular:
+ * - Solo permite dígitos numéricos
+ * - Exactamente 10 dígitos para ser válido
+ * - Muestra/oculta mensaje de error automáticamente
+ *
+ * @param {string} idCampo - El id del <input> de celular
+ *
+ * @example
+ * validarCelular("celular");
+ * validarCelular("telefonoEmpresa");
+ */
+function validarCelular(idCampo) {
+  const input = document.getElementById(idCampo);
+  if (!input) return;
+
+  // Bloquear teclas que no sean dígitos (permite Backspace, Tab, flechas, etc.)
+  input.addEventListener("keydown", function(e) {
+    const teclasPermitidas = ["Backspace", "Tab", "ArrowLeft", "ArrowRight", "Delete", "Home", "End"];
+    if (teclasPermitidas.includes(e.key)) return;
+    if (e.ctrlKey || e.metaKey) return;
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+    }
+  });
+
+  // Prevenir pegado de texto con letras
+  input.addEventListener("paste", function(e) {
+    e.preventDefault();
+    const texto = (e.clipboardData || window.clipboardData).getData("text");
+    const soloDigitos = texto.replace(/[^0-9]/g, "").slice(0, 10);
+    this.value = soloDigitos;
+    this.dispatchEvent(new Event("input"));
+  });
+
+  // Validar formato y mostrar/ocultar error
+  input.addEventListener("input", function() {
+    this.value = this.value.replace(/[^0-9]/g, "");
+    if (this.value.length > 10) {
+      this.value = this.value.slice(0, 10);
+    }
+
+    const grupo = this.closest(".form-group");
+    const errorMsg = grupo ? grupo.querySelector(".error-msg") : null;
+
+    if (this.value.length === 10) {
+      this.classList.remove("error");
+      if (errorMsg) errorMsg.style.display = "none";
+    } else if (this.value.length > 0) {
+      this.classList.add("error");
+      if (errorMsg) {
+        errorMsg.textContent = "El celular debe tener exactamente 10 dígitos";
+        errorMsg.style.display = "block";
+      }
+    } else {
+      this.classList.remove("error");
+      if (errorMsg) errorMsg.style.display = "none";
+    }
+  });
+}
+
+// =====================================================
+// FUNCIÓN REUTILIZABLE: Validar campo de correo electrónico
+// =====================================================
+/**
+ * Aplica validación en tiempo real a un campo de correo electrónico:
+ * - Verifica formato válido (usuario@dominio.extensión)
+ * - Muestra/oculta mensaje de error automáticamente
+ *
+ * @param {string} idCampo - El id del <input> de email
+ *
+ * @example
+ * validarCorreo("email");
+ * validarCorreo("emailEmpresa");
+ */
+function validarCorreo(idCampo) {
+  const input = document.getElementById(idCampo);
+  if (!input) return;
+
+  const regexCorreo = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  input.addEventListener("input", function() {
+    const grupo = this.closest(".form-group");
+    const errorMsg = grupo ? grupo.querySelector(".error-msg") : null;
+
+    if (this.value.trim() === "") {
+      this.classList.remove("error");
+      if (errorMsg) errorMsg.style.display = "none";
+    } else if (!regexCorreo.test(this.value.trim())) {
+      this.classList.add("error");
+      if (errorMsg) {
+        errorMsg.textContent = "Ingrese un correo válido (ej: usuario@dominio.com)";
+        errorMsg.style.display = "block";
+      }
+    } else {
+      this.classList.remove("error");
+      if (errorMsg) errorMsg.style.display = "none";
     }
   });
 }
