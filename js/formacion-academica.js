@@ -2,9 +2,13 @@
 // FORMACION-ACADEMICA.JS — Paso 2: Formación Académica
 // =====================================================
 // Maneja dinámicamente:
-// 1. Agregar/eliminar estudios de educación superior
-// 2. Agregar/eliminar idiomas
-// 3. Previsualización de datos
+// 1. Títulos de educación básica dinámicos según grado seleccionado
+// 2. Mostrar/ocultar educación superior según grado (>= 9)
+// 3. Modalidades académicas condicionales (grado 9-10 vs 11)
+// 4. Agregar/eliminar estudios de educación superior
+// 5. Agregar/eliminar idiomas (opcional, pero niveles obligatorios al agregar)
+// 6. Fechas máximas: no permite fechas futuras
+// 7. Previsualización de datos
 
 // =====================================================
 // REFERENCIAS AL DOM
@@ -24,13 +28,58 @@ let estudiosRegistrados = [];
 let idiomasRegistrados = [];
 
 // =====================================================
-// FUNCIÓN: mostrar/ocultar Educación Superior según grado
+// FUNCIÓN: Educación básica → título dinámico + educación superior condicional
 // =====================================================
+// Al cambiar el grado aprobado:
+// - Se cargan los títulos correspondientes en selectTituloBasica
+//   (grado 1-10: un solo título auto-seleccionado; grado 11: 5 opciones de bachiller)
+// - Se muestra/oculta la sección de educación superior (grado >= 9)
+// - Se cargan las modalidades según el grado (9-10: básicas; 11: todas)
+
 const selectEducBasica = document.getElementById("educacionBasica");
 const seccionSuperior = document.getElementById("seccionEducacionSuperior");
 const selectModalidad = document.getElementById("modalidadAcademica");
+const selectTituloBasica = document.getElementById("tituloBasica");
 
-// Opciones completas de modalidad (grado 11)
+// Diccionario: grado → títulos disponibles
+const titulosPorGrado = {
+  1: [{ valor: "certificado_1", nombre: "Certificado 1° Primaria" }],
+  2: [{ valor: "certificado_2", nombre: "Certificado 2° Primaria" }],
+  3: [{ valor: "certificado_3", nombre: "Certificado 3° Primaria" }],
+  4: [{ valor: "certificado_4", nombre: "Certificado 4° Primaria" }],
+  5: [{ valor: "certificado_primaria", nombre: "Certificado de Educación Básica Primaria" }],
+  6: [{ valor: "certificado_6", nombre: "Certificado 6° Secundaria" }],
+  7: [{ valor: "certificado_7", nombre: "Certificado 7° Secundaria" }],
+  8: [{ valor: "certificado_8", nombre: "Certificado 8° Secundaria" }],
+  9: [{ valor: "certificado_basica", nombre: "Certificado de Educación Básica Secundaria" }],
+  10: [{ valor: "certificado_10", nombre: "Certificado 10° Media" }],
+  11: [
+    { valor: "bachiller_academico", nombre: "Bachiller Académico" },
+    { valor: "bachiller_tecnico", nombre: "Bachiller Técnico" },
+    { valor: "bachiller_comercial", nombre: "Bachiller Comercial" },
+    { valor: "bachiller_industrial", nombre: "Bachiller Industrial" },
+    { valor: "bachiller_agropecuario", nombre: "Bachiller Agropecuario" }
+  ]
+};
+
+// Carga las opciones de título en el select según el grado.
+// Si solo hay una opción (grados 1-10), la auto-selecciona.
+function cargarTitulosBasica(grado) {
+  selectTituloBasica.innerHTML = '<option value="">-- Seleccione --</option>';
+  const titulos = titulosPorGrado[grado];
+  if (!titulos) return;
+  titulos.forEach(function(item) {
+    const opt = document.createElement("option");
+    opt.value = item.valor;
+    opt.textContent = item.nombre;
+    selectTituloBasica.appendChild(opt);
+  });
+  if (titulos.length === 1) {
+    selectTituloBasica.value = titulos[0].valor;
+  }
+}
+
+// Opciones completas de modalidad académica (grado 11)
 const todasLasModalidades = [
   { valor: "tecnico", nombre: "Técnico" },
   { valor: "tecnologo", nombre: "Tecnólogo" },
@@ -41,13 +90,14 @@ const todasLasModalidades = [
   { valor: "doctorado", nombre: "Doctorado" }
 ];
 
-// Opciones reducidas (grado 9 o 10)
+// Opciones reducidas de modalidad (grados 9-10: solo niveles técnicos)
 const modalidadesBasicas = [
   { valor: "tecnico", nombre: "Técnico" },
   { valor: "tecnologo", nombre: "Tecnólogo" },
   { valor: "tecnologo_especializado", nombre: "Tecnólogo Especializado" }
 ];
 
+// Carga las opciones de modalidad en el select de educación superior
 function cargarModalidades(lista) {
   selectModalidad.innerHTML = '<option value="">-- Seleccione --</option>';
   lista.forEach(function(item) {
@@ -58,8 +108,13 @@ function cargarModalidades(lista) {
   });
 }
 
+// Listener: al cambiar grado → cargar títulos + mostrar/ocultar superior + modalidades
 selectEducBasica.addEventListener("change", function() {
   const grado = parseInt(this.value);
+
+  // Cargar títulos correspondientes al grado
+  cargarTitulosBasica(grado);
+
   if (grado < 9) {
     seccionSuperior.classList.add("hidden");
   } else {
@@ -220,7 +275,7 @@ tablaEstudios.addEventListener("click", function(e) {
 const selectIdiomaRef = document.getElementById("idioma");
 const inputOtroIdioma = document.getElementById("otroIdioma");
 
-// Nombres de idiomas del select original (para validar duplicados)
+// Lista de idiomas del select original (para evitar duplicados con "Otro")
 const idiomasDelSelect = ["inglés", "francés", "alemán", "portugués", "italiano", "mandarín", "japonés", "coreano", "árabe"];
 
 selectIdiomaRef.addEventListener("change", function() {
@@ -232,14 +287,14 @@ selectIdiomaRef.addEventListener("change", function() {
   }
 });
 
-// Formatear: primera letra mayúscula, resto minúscula
+// Formatear idioma: primera letra mayúscula, resto minúscula (ej: "INGLÉS" → "Inglés")
 function formatearIdioma(texto) {
   const limpio = texto.trim();
   if (!limpio) return "";
   return limpio.charAt(0).toUpperCase() + limpio.slice(1).toLowerCase();
 }
 
-// Al escribir, formatear automáticamente
+// Al perder foco en "Otro idioma", formatear el texto automáticamente
 inputOtroIdioma.addEventListener("blur", function() {
   this.value = formatearIdioma(this.value);
 });
@@ -389,7 +444,9 @@ tablaIdiomas.addEventListener("click", function(e) {
 // =====================================================
 function llenarPreview() {
   const educBasica = document.getElementById("educacionBasica").options[document.getElementById("educacionBasica").selectedIndex].text;
-  const tituloBasica = document.getElementById("tituloBasica").value || "---";
+  const tituloBasica = selectTituloBasica.value
+    ? selectTituloBasica.options[selectTituloBasica.selectedIndex].text
+    : "---";
 
   document.getElementById("prevEducBasica").textContent = educBasica !== "-- Seleccione --" ? educBasica : "---";
   document.getElementById("prevTituloBasica").textContent = tituloBasica;
@@ -422,8 +479,11 @@ btnConfirmar.addEventListener("click", function() {
 });
 
 // =====================================================
-// VALIDACIÓN
+// VALIDACIÓN: Requisitos mínimos para avanzar al paso 3
 // =====================================================
+// - Educación básica: obligatoria siempre
+// - Educación superior: obligatoria solo si grado >= 9
+// - Idiomas: NO obligatorio (opcional)
 function validarFormacion() {
   const educBasica = document.getElementById("educacionBasica").value;
 
@@ -432,14 +492,8 @@ function validarFormacion() {
     return false;
   }
 
-  // Solo exigir educación superior si el grado es >= 9
   if (parseInt(educBasica) >= 9 && estudiosRegistrados.length === 0) {
     alert("⚠️ Debe agregar al menos un estudio de educación superior antes de continuar.");
-    return false;
-  }
-
-  if (idiomasRegistrados.length === 0) {
-    alert("⚠️ Debe agregar al menos un idioma antes de continuar.");
     return false;
   }
 

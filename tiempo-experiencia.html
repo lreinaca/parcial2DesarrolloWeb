@@ -4,8 +4,8 @@
   ============================================================
   PROPÓSITO:
   Muestra el cálculo automático del tiempo total de experiencia laboral
-  (público, privado, independiente) y permite agregar registros detallados
-  por ocupación/área.
+  (público, privado, independiente) a partir de las experiencias
+  registradas en el paso 3 (localStorage).
 
   ESTRUCTURA:
   ┌─ <header> + <nav> (pasos 1-3 completados ✓, paso 4 activo)
@@ -13,16 +13,13 @@
   │   ├─ Sección: Resumen de Tiempo (3 campos disabled auto-calculados)
   │   │   · Sector Público, Sector Privado, Independiente
   │   │   · TIEMPO TOTAL (campo destacado con estilo especial)
-  │   ├─ Sección: Detalle por Ocupación (DINÁMICA)
-  │   │   ├─ Mini-formulario: ocupación, sector, empresa, fechas
-  │   │   └─ Tabla #tablaDetalleExp (filas dinámicas con JS)
   │   ├─ Panel de Previsualización
   │   └─ Botones: ← Anterior (paso 3), Siguiente → (paso 5)
   └─ <footer>
 
   NOTA: Los campos de resumen (tiempoPublico, tiempoPrivado, etc.)
   tienen "disabled" porque sus valores se calculan automáticamente
-  con JavaScript a partir de las experiencias del paso 3.
+  con JavaScript a partir de las experiencias guardadas en localStorage.
 
   NAVEGACIÓN:
   - ← Anterior: experiencia-laboral.html (paso 3)

@@ -19,9 +19,8 @@ const radiosInhabilitado = document.querySelectorAll('input[name="inhabilitado"]
 // LLENAR PREVISUALIZACIÓN CON DATOS GUARDADOS
 // =====================================================
 window.addEventListener("load", function() {
-  // Aquí idealmente traerías los datos de sessionStorage o localStorage
-  // Para este MVP, mostraremos un resumen genérico
-  // En una aplicación real se guardarían todos los datos en sessionStorage
+  // Cargar datos guardados en localStorage para el resumen final
+  // En una aplicación completa se consultarían todos los pasos
 
   llenarPreviewResumen();
 });
@@ -34,7 +33,7 @@ function llenarPreviewResumen() {
   document.getElementById("resDocumento").textContent = "---";
   document.getElementById("resEstudios").textContent = "0";
   document.getElementById("resExperiencias").textContent = "0";
-  document.getElementById("resTotalExp").textContent = sessionStorage.getItem("tiempoExperiencia") || "0 años, 0 meses";
+  document.getElementById("resTotalExp").textContent = localStorage.getItem("tiempoExperiencia") || "0 años, 0 meses";
   document.getElementById("resEstado").textContent = "Diligenciada";
 }
 
@@ -64,7 +63,7 @@ btnConfirmar.addEventListener("click", function() {
   }
 
   alert("✅ ¡Hoja de Vida enviada correctamente!\n\nLa información ha sido registrada en el sistema.\nEl administrador revisará su solicitud pronto.\n\nEstado: Diligenciada ⏳");
-  sessionStorage.clear();
+  localStorage.clear();
   window.location.href = "index.html";
 });
 

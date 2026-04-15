@@ -1,4 +1,17 @@
+// =====================================================
+// DATOS-PERSONALES.JS — Paso 1: Datos Personales
+// =====================================================
+// Maneja dinámicamente:
+// 1. Carga de selects (países, departamentos, municipios, docs, sexo, etc.)
+// 2. Nacionalidad automática según tipo de documento
+// 3. País/Depto/Municipio de nacimiento y correspondencia
+// 4. Validación en tiempo real (celular, correo, edad >= 18)
+// 5. Libreta militar condicional
+// 6. Previsualización y validación de campos obligatorios
+
+// =====================================================
 // ARREGLOS DE OPCIONES PARA LOS SELECT
+// =====================================================
 const paises = [
   { valor: "afghanistan", nombre: "Afganistán" },
   { valor: "alemania", nombre: "Alemania" },

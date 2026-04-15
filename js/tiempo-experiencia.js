@@ -24,8 +24,8 @@ let experienciasLaboral = [];
 // FUNCIÓN: Cargar experiencias del paso 3 y datos dinámicos
 // =====================================================
 function cargarExperienciasDelPaso3() {
-  // Obtener experiencias guardadas en sessionStorage del paso 3
-  const expGuardadas = sessionStorage.getItem("experienciasLaboral");
+  // Obtener experiencias guardadas en localStorage del paso 3
+  const expGuardadas = localStorage.getItem("experienciasLaboral");
   if (expGuardadas) {
     experienciasLaboral = JSON.parse(expGuardadas);
     calcularTiempoTotal();
@@ -131,7 +131,7 @@ btnCorregir.addEventListener("click", function() {
 });
 
 btnConfirmar.addEventListener("click", function() {
-  sessionStorage.setItem("tiempoExperiencia", tiempoTotalField.value);
+  localStorage.setItem("tiempoExperiencia", tiempoTotalField.value);
   window.location.href = "certificacion.html";
 });
 

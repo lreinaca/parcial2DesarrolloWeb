@@ -120,27 +120,34 @@
         </h2>
         <div class="form-grid cols-3">
           <div class="form-group">
-            <label for="educacionBasica">Ultimo grado aprobado <span class="required-mark">*</span></label>
+            <label for="educacionBasica">Último grado aprobado <span class="required-mark">*</span></label>
             <select id="educacionBasica" name="educacionBasica">
               <option value="">-- Seleccione --</option>
-              <option value="1">1° Primaria</option>
-              <option value="2">2° Primaria</option>
-              <option value="3">3° Primaria</option>
-              <option value="4">4° Primaria</option>
-              <option value="5">5° Primaria</option>
-              <option value="6">6° Bachillerato</option>
-              <option value="7">7° Bachillerato</option>
-              <option value="8">8° Bachillerato</option>
-              <option value="9">9° Bachillerato</option>
-              <option value="10">10° Bachillerato</option>
-              <option value="11">11° Bachillerato</option>
+              <optgroup label="Primaria">
+                <option value="1">1° Primaria</option>
+                <option value="2">2° Primaria</option>
+                <option value="3">3° Primaria</option>
+                <option value="4">4° Primaria</option>
+                <option value="5">5° Primaria</option>
+              </optgroup>
+              <optgroup label="Básica Secundaria">
+                <option value="6">6° Secundaria</option>
+                <option value="7">7° Secundaria</option>
+                <option value="8">8° Secundaria</option>
+                <option value="9">9° Secundaria</option>
+              </optgroup>
+              <optgroup label="Media">
+                <option value="10">10° Media</option>
+                <option value="11">11° Media</option>
+              </optgroup>
             </select>
             <span class="error-msg">Seleccione el nivel de educación</span>
           </div>
           <div class="form-group">
             <label for="tituloBasica">Título Obtenido</label>
-            <input type="text" id="tituloBasica" name="tituloBasica"
-                   placeholder="Ej: Bachiller Académico" maxlength="80">
+            <select id="tituloBasica" name="tituloBasica">
+              <option value="">-- Seleccione grado primero --</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="fechaGradoBasica">Fecha de Grado</label>
@@ -319,7 +326,7 @@
         <div id="formNuevoIdioma">
           <div class="form-grid cols-4">
             <div class="form-group">
-              <label for="idioma">Idioma <span class="required-mark">*</span></label>
+              <label for="idioma">Idioma</label>
               <select id="idioma" name="idioma">
                 <option value="">-- Seleccione --</option>
                 <option value="ingles">Inglés</option>

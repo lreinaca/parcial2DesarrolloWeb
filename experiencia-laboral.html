@@ -12,13 +12,18 @@
   │   ├─ .progress-bar (3 de 5 resaltados)
   │   ├─ Sección: Experiencia Laboral
   │   │   ├─ Mini-formulario (#formNuevaExperiencia):
-  │   │   │   · Empresa, Tipo (Pública/Privada), País, Depto, Municipio
+  │   │   │   · Empresa, Tipo (Pública/Privada/Independiente)
+  │   │   │   · País, Depto (cascading), Municipio (cascading)
   │   │   │   · Correo/Teléfono/Dirección de la entidad
-  │   │   │   · Fecha ingreso, fecha retiro, cargo, dependencia
+  │   │   │   · ¿Trabaja actualmente aquí? (Si/No)
+  │   │   │   · Fecha ingreso, fecha retiro (condicional), cargo, dependencia
   │   │   └─ Tabla #tablaExperiencias (filas dinámicas con JS)
-  │   ├─ Panel de Previsualización (total exp, sector público, privado)
+  │   ├─ Panel de Previsualización (total, público, privado, independiente)
   │   └─ Botones: ← Anterior (paso 2), Siguiente → (paso 4)
   └─ <footer>
+
+  PERSISTENCIA: Las experiencias se guardan en localStorage para
+  conservarse al navegar entre pasos y al regresar a esta página.
 
   NAVEGACIÓN:
   - ← Anterior: formacion-academica.html (paso 2)

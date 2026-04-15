@@ -2,9 +2,12 @@
 // EXPERIENCIA-LABORAL.JS — Paso 3: Experiencia Laboral
 // =====================================================
 // Maneja dinámicamente:
-// 1. Agregar/eliminar experiencias laborales
-// 2. Previsualización con conteo de experiencias
-// 3. Carga dinámica de países, departamentos y municipios
+// 1. Agregar/eliminar experiencias laborales (Pública, Privada, Independiente)
+// 2. Empleo actual: solo permite un empleo activo a la vez
+// 3. Carga dinámica de países, departamentos y municipios (cascading selects)
+// 4. Validación: celular, correo, fechas no futuras, campos obligatorios
+// 5. Persistencia en localStorage (las experiencias se conservan al navegar)
+// 6. Previsualización con conteo por tipo de empresa
 
 // =====================================================
 // REFERENCIAS AL DOM
@@ -76,6 +79,16 @@ window.addEventListener("load", function() {
       grupoFechaRetiro.classList.remove("hidden");
     }
   });
+
+  // Cargar experiencias guardadas en localStorage (para persistir al navegar)
+  const expGuardadas = localStorage.getItem("experienciasLaboral");
+  if (expGuardadas) {
+    experienciasRegistradas = JSON.parse(expGuardadas);
+    experienciasRegistradas.forEach(function(exp) {
+      agregarFilaExperiencia(exp);
+    });
+    actualizarTablaExperiencias();
+  }
 });
 
 // =====================================================
@@ -121,6 +134,15 @@ btnAgregarExperiencia.addEventListener("click", function() {
   if (empleoActual === "no" && !fechaRetiro) {
     alert("⚠️ Debe ingresar la fecha de retiro.");
     return;
+  }
+
+  // No permitir más de un empleo actual
+  if (empleoActual === "si") {
+    const yaExisteActual = experienciasRegistradas.some(e => e.fechaRetiro === "Actual");
+    if (yaExisteActual) {
+      alert("⚠️ Ya tiene una experiencia registrada como empleo actual. Solo puede tener un empleo actual a la vez.");
+      return;
+    }
   }
 
   // Validar que fecha retiro sea mayor que fecha ingreso (si está completa)
@@ -170,6 +192,9 @@ btnAgregarExperiencia.addEventListener("click", function() {
 
   // Actualizar tabla
   actualizarTablaExperiencias();
+
+  // Guardar en localStorage
+  localStorage.setItem("experienciasLaboral", JSON.stringify(experienciasRegistradas));
 });
 
 // =====================================================
@@ -221,6 +246,9 @@ tablaExperiencias.addEventListener("click", function(e) {
     experienciasRegistradas = experienciasRegistradas.filter(e => e.id !== id);
     document.querySelector(`tr[data-id="${id}"]`).remove();
     actualizarTablaExperiencias();
+
+    // Actualizar localStorage
+    localStorage.setItem("experienciasLaboral", JSON.stringify(experienciasRegistradas));
   }
 });
 
@@ -259,7 +287,7 @@ btnConfirmar.addEventListener("click", function() {
     panelPreview.classList.remove("visible");
     return;
   }
-  sessionStorage.setItem("experienciasLaboral", JSON.stringify(experienciasRegistradas));
+  localStorage.setItem("experienciasLaboral", JSON.stringify(experienciasRegistradas));
   window.location.href = "tiempo-experiencia.html";
 });
 
